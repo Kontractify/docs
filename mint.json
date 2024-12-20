@@ -52,7 +52,7 @@
       ]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "AI Followup Generation",
       "pages": [
         "api-reference/endpoint/create"
       ]
