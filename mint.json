@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/logo-white.png",
+    "light": "/logo/logo.png"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:anand@getaftercare.com"
     }
   ],
   "topbarCtaButton": {
     "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "url": "https://surveys.getaftercare.com"
   },
   "tabs": [
     {
@@ -33,39 +33,16 @@
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
-    },
-    {
       "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "icon": "discord",
+      "url": "https://discord.gg/Rn2yZ3He"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
-      ]
-    },
-    {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "introduction"
       ]
     },
     {
@@ -77,9 +54,7 @@
     {
       "group": "Endpoint Examples",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-reference/endpoint/create"
       ]
     }
   ],
