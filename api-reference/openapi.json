@@ -15,11 +15,11 @@
   },
   "servers": [
     {
-      "url": "https://api.example.com",
+      "url": "https://surveys.getaftercare.com",
       "description": "Production server"
     },
     {
-      "url": "https://staging-api.example.com",
+      "url": "https://staging.aftercareai.com",
       "description": "Staging server"
     }
   ],
