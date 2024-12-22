@@ -23,7 +23,8 @@ Aftercare AI uses a few steps to generate your followup questions.
 ### Survey Context
 
 > Garbage in, garbage out
-> - a wise man
+>
+> \- a wise man
 
 The quality of followup question that Aftercare AI generates is dependant on the quality of context given to Aftercare about the survey.
 While many fields are optional, try to provide as many as you can. 
@@ -64,7 +65,7 @@ Determining when to stop asking a followup question is a fairly nuanced problem 
 **user response**|**completeness**|**relevance**|**behavior: succinct**|**behavior: redirection**|**behavior: verbose**
 -----|-----|-----|-----|-----|-----
 Aftercare is pretty cool |0|0|`no followup`| I noticed you mentioned Aftercare when I asked about Coffeefest, can you help me understand the connection? | I noticed you mentioned Aftercare when I asked about Coffeefest, can you help me understand the connection? 
-Brew Watches booth|40|90|`no followup` |What did you like about Brew Watches?|What did you like about Brew Watches?
+Brew Watches booth|40|90|What did you like about Brew Watches? |What did you like about Brew Watches?|What did you like about Brew Watches?
 I loved the Trade Coffee booth! Learning about where they sourced the coffee beans was very educational. |90|100|`no followup`|`no followup`|What specifically did you learn about coffee sourcing at the Trade Coffee booth?
 
 <Tip>Use the Verbose behavior, completeness score, and relevance score to implement your own followup behavior.</Tip>
