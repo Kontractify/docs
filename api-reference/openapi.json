@@ -6,7 +6,7 @@
     "description": "API for generating followup questions based on survey responses",
     "contact": {
       "name": "API Support",
-      "email": "support@example.com"
+      "email": "justin@getaftercare.com"
     },
     "license": {
       "name": "Apache 2.0",
@@ -69,7 +69,8 @@
                 "question": "How likely are you to recommend our service?",
                 "questionContext": "Understanding customer loyalty and satisfaction",
                 "answer": "Very likely, the customer service is excellent",
-                "surveyIdentifier": "CSAT-2024-Q1"
+                "surveyIdentifier": "CSAT-2024-Q1",
+                "guidanceBehavior": "Verbose"
               }
             }
           }
@@ -83,7 +84,11 @@
                   "$ref": "#/components/schemas/FollowupGenerationResponse"
                 },
                 "example": {
-                  "followupQuestion": "What specific aspects of our customer service impressed you the most?"
+                  "followupQuestion": "What specific aspects of our customer service impressed you the most?",
+                  "responseEvaluation": {
+                    "completeness": 75,
+                    "relevance": 90
+                  }
                 }
               }
             }
@@ -161,6 +166,30 @@
       }
     },
     "schemas": {
+      "FollowupGenerationGuidanceBehavior": {
+        "type": "string",
+        "description": "Different ways Aftercare AI will generate follow-up questions based on non-applicable user input.\n\n* `Succinct` - The AI will not generate a follow-up question if the response is irrelevant or complete. This is the default behavior.\n* `Redirection` - The AI will return a follow-up question that redirects the user to answering the top-level question if it is irrelevant and incomplete.\n* `Verbose` - The AI will return a follow-up question regardless of the relevance or completeness of the response. This is the most verbose behavior.",
+        "enum": ["Succinct", "Redirection", "Verbose"],
+        "default": "Succint"
+      },
+      "ResponseEvaluation": {
+        "type": "object",
+        "required": ["completeness", "relevance"],
+        "properties": {
+          "completeness": {
+            "type": "number",
+            "description": "A number between 0 and 100 that represents how completely the response answered the topic question",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "relevance": {
+            "type": "number",
+            "description": "A number between 0 and 100 that represents the relevance of the response to the topic question.",
+            "minimum": 0,
+            "maximum": 100
+          }
+        }
+      },
       "FollowupGenerationRequest": {
         "type": "object",
         "required": [
@@ -198,19 +227,26 @@
             "type": "string",
             "description": "A unique identifier for the survey. Aftercare will use this to generate useful metrics",
             "example": "CSAT-2024-Q1"
+          },
+          "guidanceBehavior": {
+            "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
           }
         }
       },
       "FollowupGenerationResponse": {
         "type": "object",
         "required": [
-          "followupQuestion"
+          "followupQuestion",
+          "responseEvaluation"
         ],
         "properties": {
           "followupQuestion": {
             "type": "string",
             "description": "The generated followup question",
             "example": "What specific aspects of our customer service impressed you the most?"
+          },
+          "responseEvaluation": {
+            "$ref": "#/components/schemas/ResponseEvaluation"
           }
         }
       },
