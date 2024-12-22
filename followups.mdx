@@ -1,0 +1,71 @@
+---
+title: AI Followup Generation
+description: 'Get started generating one off followup questions using AI'
+---
+
+import { topicQuestionDef, completenessDef, relevanceDef, guidanceDef } from '/snippets/definitions.mdx';
+
+## Introduction
+
+Aftercare AI uses a few steps to generate your followup questions. 
+<Steps>
+  <Step title="Survey Context">
+    Provide context about the survey, <Tooltip tip={topicQuestionDef}>`topic question`</Tooltip>, and response 
+  </Step>
+  <Step title="Evaluate">
+    Determine the <Tooltip tip={relevanceDef}>`relevance`</Tooltip> and <Tooltip tip={completenessDef}>`completeness`</Tooltip> of the survey.
+  </Step>
+  <Step title="Generate">
+    Create the followup question using <Tooltip tip={guidanceDef}>`guidance`</Tooltip>. 
+  </Step>
+</Steps>
+
+### Survey Context
+
+> Garbage in, garbage out
+> - a wise man
+
+The quality of followup question that Aftercare AI generates is dependant on the quality of context given to Aftercare about the survey.
+While many fields are optional, try to provide as many as you can. 
+
+
+<Tip>Question context is especially helpful for followup generation. Telling the AI what you are trying to learn from the question helps Aftercare reason about the right line of questioning.</Tip>
+
+See the followup generation [API reference](api-reference/endpoint/create) for the most up to date params. 
+
+### Evaluation
+
+Aftercare will evalute the survey, topic question, and response and provide two scores: 
+- `completeness`: {completenessDef}. Responses high in completeness answer the topic question well. 
+- `relevance`: {relevanceDef}. Responses low in relevance are usually no-answer, troll answers, or just completely unrelated answers.
+
+These scores are used in the next section, [generation](/followups#generation)
+
+### Generation
+
+Determining when to stop asking a followup question is a fairly nuanced problem that depends on the situation. Aftercare provides some common followup behaviors to choose from, called `guidance behavior`. Alternatively you can determine the followup behavior on your own using the `completeness` and `relevance` scores. 
+
+<CardGroup cols={3}>
+  <Card title="Succinct (default)" icon="pencil">
+    The AI will not generate a follow-up question if the response is irrelevant or complete. This is the default behavior.
+  </Card>
+  <Card title="Redirection" icon="person-walking-arrow-loop-left">
+    The AI will return a follow-up question that redirects the user to answering the top-level question if it is irrelevant and incomplete.
+  </Card>
+  <Card title="Verbose" icon="comment-dots">
+    The AI will return a follow-up question regardless of the relevance or completeness of the response.
+  </Card>
+</CardGroup>
+
+#### Generation Examples
+
+**sample question**: What was your favorite booth at coffee fest and why did you like it?
+
+**user response**|**completeness**|**relevance**|**behavior: succinct**|**behavior: redirection**|**behavior: verbose**
+-----|-----|-----|-----|-----|-----
+Aftercare is pretty cool |0|0|`no followup`| I noticed you mentioned Aftercare when I asked about Coffeefest, can you help me understand the connection? | I noticed you mentioned Aftercare when I asked about Coffeefest, can you help me understand the connection? 
+Brew Watches booth|40|90|`no followup` |What did you like about Brew Watches?|What did you like about Brew Watches?
+I loved the Trade Coffee booth! Learning about where they sourced the coffee beans was very educational. |90|100|`no followup`|`no followup`|What specifically did you learn about coffee sourcing at the Trade Coffee booth?
+
+<Tip>Use the Verbose behavior, completeness score, and relevance score to implement your own followup behavior.</Tip>
+
