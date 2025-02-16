@@ -328,11 +328,11 @@
         "x-codeSamples": [
           {
             "lang": "JavaScript",
-            "source": "const response = await api.quality.evaluateBatch({\n  surveyName: 'Customer Satisfaction',\n  responses: [{\n    respondentIdentifier: '1234567890',\n    surveyEntries: [{\n        question: 'How satisfied are you?',\n        answer: 'I really love playing tennis with my friends on Fridays'\n    }]\n  }],\n  callbackUrl: 'https://example.com/callback'\n});"
+            "source": "const response = await api.quality.evaluateBatch({\n  surveyName: 'Customer Satisfaction',\n  responses: [{\n    respondentIdentifier: '1234567890',\n    responseIdentifier: '54321',\n    surveyEntries: [{\n        question: 'How satisfied are you?',\n        answer: 'I really love playing tennis with my friends on Fridays'\n    }]\n  }],\n  callbackUrl: 'https://example.com/callback'\n});"
           },
           {
             "lang": "Python",
-            "source": "response = api.quality.evaluateBatch(\n    survey_name='Customer Satisfaction',\n    responses=[{\n        'respondentIdentifier': '1234567890',\n        'surveyEntries': [{\n            'question': 'How satisfied are you?',\n            'answer': 'I really love playing tennis with my friends on Fridays'\n        }]\n    }],\n    callback_url='https://example.com/callback'\n)"
+            "source": "response = api.quality.evaluateBatch(\n    survey_name='Customer Satisfaction',\n    responses=[{\n        'respondentIdentifier': '1234567890',\n    responseIdentifier: '54321',\n        'surveyEntries': [{\n            'question': 'How satisfied are you?',\n            'answer': 'I really love playing tennis with my friends on Fridays'\n        }]\n    }],\n    callback_url='https://example.com/callback'\n)"
           }
         ],
         "requestBody": {
@@ -767,7 +767,11 @@
           },
           "respondentIdentifier": {
             "type": "string",
-            "description": "Optional identifier for the survey response.\n\nAftercare can use this to asscociate survey entries for a single respondent. This is useful when the survey response is submitted in multiple parts or submitted over time."
+            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one and return it in the response - useful if the survey response is submitted in multiple parts or submitted over time."
           },
           "qualityIssues": {
             "type": "array",
@@ -780,7 +784,7 @@
       },
       "DataQualityResponse": {
         "type": "object",
-        "required": ["numIssues", "qualityScore", "evaluations"],
+        "required": ["numIssues", "qualityScore", "evaluations", "responseIdentifier"],
         "properties": {
           "numIssues": {
             "type": "integer",
@@ -798,6 +802,10 @@
             "items": {
               "$ref": "#/components/schemas/SurveyEntryEvaluation"
             }
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Unique identifier for the survey response"
           }
         }
       },
@@ -807,7 +815,11 @@
         "properties": {
           "respondentIdentifier": {
             "type": "string",
-            "description": "Optional identifier for the respondent. Aftercare can use this to asscociate survey entries for a single respondent. This is useful when the survey response is submitted in multiple parts or submitted over time."
+            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one and return it in the response - useful if the survey response is submitted in multiple parts or submitted over time."
           },
           "surveyEntries": {
             "type": "array",
@@ -875,7 +887,11 @@
         "properties": {
           "respondentIdentifier": {
             "type": "string",
-            "description": "Optional identifier for the respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent. This is useful when the survey response is submitted in multiple parts or submitted over time."
+            "description": "OOptional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one."
           },
           "numIssues": {
             "type": "integer",
