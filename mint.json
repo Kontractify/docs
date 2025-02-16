@@ -56,7 +56,15 @@
     {
       "group": "AI Followup Generation",
       "pages": [
-        "api-reference/endpoint/create"
+        "api-reference/followups/create"
+      ]
+    },
+    {
+      "group": "AI Data Quality Evaluation",
+      "pages": [
+        "api-reference/data-quality/evaluate",
+        "api-reference/data-quality/batch",
+        "api-reference/data-quality/get"
       ]
     }
   ],
