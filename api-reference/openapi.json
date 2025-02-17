@@ -155,6 +155,20 @@
                 }
               }
             }
+          },
+          "504": {
+            "description": "Gateway timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "GATEWAY_TIMEOUT",
+                  "message": "The request timed out"
+                }
+              }
+            }
           }
         }
       }
@@ -307,6 +321,20 @@
                 "example": {
                   "code": "INTERNAL_ERROR",
                   "message": "An unexpected error occurred"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "GATEWAY_TIMEOUT",
+                  "message": "The request timed out"
                 }
               }
             }
