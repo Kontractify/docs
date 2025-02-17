@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Followup Generation API",
-    "version": "1.0.0",
+    "version": "1.0.0", 
     "description": "API for generating followup questions based on survey responses",
     "contact": {
       "name": "API Support",
@@ -19,7 +19,7 @@
       "description": "Production server"
     },
     {
-      "url": "https://staging.aftercareai.com",
+      "url": "https://staging.aftercareai.com", 
       "description": "Staging server"
     }
   ],
@@ -27,6 +27,10 @@
     {
       "name": "Followups",
       "description": "Operations related to followup question generation"
+    },
+    {
+      "name": "Data Quality",
+      "description": "Operations related to response data quality evaluation"
     }
   ],
   "security": [
@@ -88,6 +92,386 @@
                   "responseEvaluation": {
                     "completeness": 75,
                     "relevance": 90
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Invalid request parameters",
+                  "details": {
+                    "surveyName": "Survey name is required"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_API_KEY",
+                  "message": "Invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Requested resource not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "An unexpected error occurred"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-quality": {
+      "post": {
+        "tags": ["Data Quality"],
+        "summary": "Evaluate survey response quality",
+        "description": "Evaluates the quality of survey responses for potential issues",
+        "operationId": "evaluateDataQuality",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "x-codeSamples": [
+          {
+            "lang": "JavaScript",
+            "source": "const response = await api.quality.evaluate({\n  surveyName: 'Customer Satisfaction',\n  surveyEntries: [{\n    question: 'How satisfied are you?',\n    answer: 'I really love playing tennis with my friends on Fridays'\n  }]\n});"
+          },
+          {
+            "lang": "Python",
+            "source": "response = api.quality.evaluate(\n    survey_name='Customer Satisfaction',\n    survey_entries=[{\n        'question': 'How satisfied are you?',\n        'answer': 'I really love playing tennis with my friends on Fridays'\n    }]\n)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataQualityRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully evaluated survey quality",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataQualityResponse"
+                },
+                "example": {
+                  "numIssues": 1,
+                  "qualityScore": 30,
+                  "evaluations": [
+                    {
+                      "surveyEntry": {
+                        "question": "How satisfied were you with our service?",
+                        "answer": "I really love playing tennis with my friends on Fridays"
+                      },
+                      "numIssues": 1,
+                      "qualityScore": 30,
+                      "qualityIssueChecks": [
+                        {
+                          "issue": "Irrelevant",
+                          "score": 10,
+                          "isIssue": true
+                        },
+                        {
+                          "issue": "Nonsensical",
+                          "score": 100,
+                          "isIssue": false
+                        },
+                        {
+                          "issue": "Incomplete",
+                          "score": 100,
+                          "isIssue": false
+                        },
+                        {
+                          "issue": "Low Effort",
+                          "score": 95,
+                          "isIssue": false
+                        },
+                        {
+                          "issue": "LLM Generated",
+                          "score": 100,
+                          "isIssue": false
+                        },
+                        {
+                          "issue": "Self Duplicated",
+                          "score": 100,
+                          "isIssue": false
+                        },
+                        {
+                          "issue": "Shared Duplicate",
+                          "score": 100,
+                          "isIssue": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Invalid request parameters",
+                  "details": {
+                    "surveyName": "Survey name is required"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_API_KEY",
+                  "message": "Invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Requested resource not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "An unexpected error occurred"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-quality/batch": {
+      "post": {
+        "tags": ["Data Quality", "Batch"],
+        "summary": "Batch evaluate survey response quality",
+        "description": "Asynchronously evaluates the quality of multiple survey responses",
+        "operationId": "evaluateDataQualityBatch",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "x-codeSamples": [
+          {
+            "lang": "JavaScript",
+            "source": "const response = await api.quality.evaluateBatch({\n  surveyName: 'Customer Satisfaction',\n  responses: [{\n    respondentIdentifier: '1234567890',\n    responseIdentifier: '54321',\n    surveyEntries: [{\n        question: 'How satisfied are you?',\n        answer: 'I really love playing tennis with my friends on Fridays'\n    }]\n  }],\n  callbackUrl: 'https://example.com/callback'\n});"
+          },
+          {
+            "lang": "Python",
+            "source": "response = api.quality.evaluateBatch(\n    survey_name='Customer Satisfaction',\n    responses=[{\n        'respondentIdentifier': '1234567890',\n    responseIdentifier: '54321',\n        'surveyEntries': [{\n            'question': 'How satisfied are you?',\n            'answer': 'I really love playing tennis with my friends on Fridays'\n        }]\n    }],\n    callback_url='https://example.com/callback'\n)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataQualityBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Batch evaluation job accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataQualityBatchResponse"
+                },
+                "example": {
+                  "batchJobId": "123e4567-e89b-12d3-a456-426614174000",
+                  "status": "queued",
+                  "results": {
+                    "items": [],
+                    "nextCursor": null
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Invalid request parameters",
+                  "details": {
+                    "surveyName": "Survey name is required"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_API_KEY",
+                  "message": "Invalid or missing API key"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "NOT_FOUND",
+                  "message": "Requested resource not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "An unexpected error occurred"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-quality/batch/{batchJobId}": {
+      "get": {
+        "tags": ["Data Quality", "Batch"],
+        "summary": "Get batch job status",
+        "description": "Retrieves the current status and results of a batch evaluation job",
+        "operationId": "getBatchJobStatus",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "x-codeSamples": [
+          {
+            "lang": "JavaScript",
+            "source": "const response = await api.quality.getBatchJobStatus();"
+          },
+          {
+            "lang": "Python",
+            "source": "response = api.quality.getBatchJobStatus()"
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batchJobId",
+            "in": "path",
+            "required": true,
+            "description": "ID of the batch job to check",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Batch job status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataQualityBatchResponse"
+                },
+                "example": {
+                  "batchJobId": "123e4567-e89b-12d3-a456-426614174000",
+                  "status": "completed",
+                  "results": {
+                    "items": [],
+                    "nextCursor": null
                   }
                 }
               }
@@ -273,6 +657,274 @@
             "example": {
               "surveyName": "Survey name is required"
             }
+          }
+        }
+      },
+      "QualityIssueType": {
+        "type": "string",
+        "enum": ["Nonsensical", "Irrelevant", "Low Effort", "LLM Generated", "Repeated Answers", "Duplicate Answers"],
+        "description": "Types of quality issues that can be detected in survey responses.\n\n* `Nonsensical` - Response lacks logical meaning or sense. Likely gibberish.\n* `Irrelevant` - Response does not address the question.\n* `Low Effort` - Respondent did not put in much effort to answer the question. Lacks detail or concrete examples.\n* `LLM Generated` - Response appears to be generated by AI.\n* `Self Duplicated` - Responses from the same respondent contain duplicated content across multiple answers. Only evaluated when multiple survey entries are provided or if a survey identifier and respondent identifier is provided.\n* `Shared Duplicate` - Responses contain duplicated content across different respondents for the same question. Only evaluated if survey identifiers and question identifiers are provided."
+      },
+      "BatchJobStatus": {
+        "type": "string",
+        "enum": ["queued", "processing", "completed", "failed"],
+        "description": "Status values for batch processing jobs"
+      },
+      "SurveyEntry": {
+        "type": "object",
+        "description": "A question and answer pair from a survey response",
+        "required": ["question", "answer"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The question that was asked"
+          },
+          "questionContext": {
+            "type": "string",
+            "description": "Optional context describing what the surveyor is attempting to learn"
+          },
+          "answer": {
+            "type": "string",
+            "description": "The response provided by the user"
+          },
+          "questionIdentifier": {
+            "type": "string",
+            "description": "Optional question identifier for tracking duplicates and follow-ups"
+          },
+          "parentQuestionIdentifier": {
+            "type": "string",
+            "description": "Optional identifier of a previous question in a follow-up thread"
+          }
+        }
+      },
+      "QualityIssueCheck": {
+        "type": "object",
+        "required": ["type", "score", "isIssue"],
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/QualityIssueType"
+          },
+          "score": {
+            "type": "number",
+            "description": "Score between 0-100 for this quality issue.\n\nThe higher the score, the greater the likelihood and severity of the quality issue.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "isIssue": {
+            "type": "boolean",
+            "description": "Indicates if this issue was detected"
+          }
+        }
+      },
+      "SurveyEntryEvaluation": {
+        "type": "object",
+        "required": ["surveyEntry", "numIssues", "qualityScore", "qualityIssueChecks"],
+        "properties": {
+          "surveyEntry": {
+            "$ref": "#/components/schemas/SurveyEntry"
+          },
+          "numIssues": {
+            "type": "integer",
+            "description": "Number of quality issues detected",
+            "minimum": 0
+          },
+          "qualityScore": {
+            "type": "number",
+            "description": "A score between 0 and 100 that represents the overall quality of the individual survey entry.\n\nThe score is a weighted average of the quality issue scores.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "qualityIssueChecks": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualityIssueCheck"
+            }
+          }
+        }
+      },
+      "DataQualityRequest": {
+        "type": "object",
+        "required": ["surveyName", "surveyEntries"],
+        "properties": {
+          "surveyName": {
+            "type": "string",
+            "description": "The name of the survey"
+          },
+          "surveyDescription": {
+            "type": "string",
+            "description": "Optional description of the survey's purpose"
+          },
+          "surveyEntries": {
+            "type": "array",
+            "description": "The collection of question-answer pairs to evaluate",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntry"
+            }
+          },
+          "surveyIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey.\n\nAftercare will use this to associate questions and answers with the survey."
+          },
+          "respondentIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one and return it in the response - useful if the survey response is submitted in multiple parts or submitted over time."
+          },
+          "qualityIssues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualityIssueType"
+            },
+            "description": "Optional array of specific quality issues to evaluate"
+          }
+        }
+      },
+      "DataQualityResponse": {
+        "type": "object",
+        "required": ["numIssues", "qualityScore", "evaluations", "responseIdentifier"],
+        "properties": {
+          "numIssues": {
+            "type": "integer",
+            "description": "Number of quality issues detected across all survey entries",
+            "minimum": 0
+          },
+          "qualityScore": {
+            "type": "number",
+              "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "evaluations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntryEvaluation"
+            }
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Unique identifier for the survey response"
+          }
+        }
+      },
+      "SurveyResponse": {
+        "type": "object",
+        "required": ["surveyEntries"],
+        "properties": {
+          "respondentIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one and return it in the response - useful if the survey response is submitted in multiple parts or submitted over time."
+          },
+          "surveyEntries": {
+            "type": "array",
+            "description": "The collection of question-answer pairs to evaluate",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntry"
+            }
+          }
+        }
+      },
+      "DataQualityBatchRequest": {
+        "type": "object",
+        "required": ["surveyName", "responses", "callbackUrl"],
+        "properties": {
+          "surveyName": {
+            "type": "string",
+            "description": "The name of the survey"
+          },
+          "surveyIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey.\n\nAftercare will use this to associate questions and answers with the survey."
+          },
+          "surveyDescription": {
+            "type": "string",
+            "description": "Optional description of the survey's purpose"
+          },
+          "responses": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyResponse"
+            }
+          },
+          "qualityIssues": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QualityIssueType"
+            }
+          },
+          "callbackUrl": {
+            "type": "string",
+            "description": "URL where results should be sent when processing completes"
+          }
+        }
+      },
+      "BatchJobResults": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RespondentEvaluation"
+            }
+          },
+          "nextCursor": {
+            "type": "string",
+            "nullable": true,
+            "description": "Cursor for the next page of results"
+          }
+        }
+      },
+      "RespondentEvaluation": {
+        "type": "object",
+        "required": ["numIssues", "qualityScore", "evaluations"],
+        "properties": {
+          "respondentIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one."
+          },
+          "numIssues": {
+            "type": "integer",
+            "description": "Number of quality issues detected",
+            "minimum": 0
+          },
+          "qualityScore": {
+            "type": "number",
+            "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "evaluations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntryEvaluation"
+            }
+          }
+        }
+      },
+      "DataQualityBatchResponse": {
+        "type": "object",
+        "required": ["batchJobId", "status"],
+        "properties": {
+          "batchJobId": {
+            "type": "string",
+            "description": "Unique identifier for the batch processing job"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BatchJobStatus"
+          },
+          "results": {
+            "$ref": "#/components/schemas/BatchJobResults"
           }
         }
       }
