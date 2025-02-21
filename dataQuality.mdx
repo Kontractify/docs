@@ -1,0 +1,29 @@
+---
+title: AI Response Quality Analysis
+description: 'Understand the quality of your responses with AI'
+icon: "badge-check"
+---
+
+<Tip>Looking for the [API reference](/api-reference/data-quality/evaluate)?</Tip>
+
+## Introduction
+
+Aftercare evaluates the quality of your responses in the context of the response by itself and compared to all other responses to the survey. Not all 
+quality evaluations are built the same, so we've built a few different metrics to give you a holistic view of the quality of your responses.
+
+## Components
+
+Aftercare AI breaks down the quality of your responses into a few components: 
+
+- `irrelevance`: how pertinent the response is to the question.
+- `incompleteness`: how much of the total question + context was answered.
+- `nonsensical`: how coherent and logical the response is.
+- `effort`: how effortful the response is.
+- `llm generated`: how likely the response is to be llm generated.
+- `self duplication`: how similar the response is to previous responses in the same survey response.
+- `shared duplication`: how similar the response is other responses across respondants
+
+## Tips for improving your response quality
+
+While you can use the response quality API to evaluate each response individually, providing a `survey ID` will help tie together responses across respondants.
+Doing so will provide a more accurate assessment of the quality of your responses. 
