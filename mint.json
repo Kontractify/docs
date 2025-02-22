@@ -33,9 +33,14 @@
   ],
   "anchors": [
     {
-      "name": "Community",
+      "name": "Discord",
       "icon": "discord",
       "url": "https://discord.gg/Rn2yZ3He"
+    },
+    {
+      "name": "Slack",
+      "icon": "slack",
+      "url": "https://join.slack.com/t/aftercareusers/shared_invite/zt-30ezqu0sy-0YybIITmOcx5BEpdR3mWCQ"
     }
   ],
   "navigation": [
