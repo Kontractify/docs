@@ -69,9 +69,9 @@
               },
               "example": {
                 "surveyName": "Customer Satisfaction",
-                "surveyDescription": "Quarterly customer satisfaction survey",
+                "surveyDescription": "Tracking customer satisfaction and loyalty for the XYZ Company",
                 "question": "How likely are you to recommend our service?",
-                "questionContext": "Understanding customer loyalty and satisfaction",
+                "questionContext": "I want to understand specifically why a customer is convinced to recommend our service. If they are not recommending our service, I want to know why.",
                 "answer": "Very likely, the customer service is excellent",
                 "identifiers": {
                   "surveyIdentifier": "CSAT-2024-Q1",
@@ -96,7 +96,8 @@
                     "completeness": 75,
                     "relevance": 90
                   },
-                  "threadId": "7a54b8da-f65d-4946-9c9a-f202e0cc29c8"
+                  "threadId": "7a54b8da-f65d-4946-9c9a-f202e0cc29c8",
+                  "responseIdentifier": "12345"
                 }
               }
             }
@@ -112,7 +113,7 @@
                   "code": "INVALID_REQUEST",
                   "message": "Invalid request parameters",
                   "details": {
-                    "surveyName": "Survey name is required"
+                    "question": "Question is required"
                   }
                 }
               }
@@ -235,32 +236,32 @@
                         },
                         {
                           "issue": "Nonsensical",
-                          "score": 100,
-                          "isIssue": false
+                          "score": 80,
+                          "isIssue": true
                         },
                         {
                           "issue": "Incomplete",
-                          "score": 100,
+                          "score": 60,
                           "isIssue": false
                         },
                         {
                           "issue": "Low Effort",
                           "score": 95,
-                          "isIssue": false
+                          "isIssue": true
                         },
                         {
                           "issue": "LLM Generated",
-                          "score": 100,
+                          "score": 80,
                           "isIssue": false
                         },
                         {
                           "issue": "Self Duplicated",
-                          "score": 100,
+                          "score": 30,
                           "isIssue": false
                         },
                         {
                           "issue": "Shared Duplicate",
-                          "score": 100,
+                          "score": 30,
                           "isIssue": false
                         }
                       ]
@@ -282,7 +283,7 @@
                   "code": "INVALID_REQUEST",
                   "message": "Invalid request parameters",
                   "details": {
-                    "surveyName": "Survey name is required"
+                    "question": "Question is required"
                   }
                 }
               }
@@ -361,11 +362,11 @@
         "x-codeSamples": [
           {
             "lang": "JavaScript",
-            "source": "const response = await api.quality.evaluateBatch({\n  surveyName: 'Customer Satisfaction',\n  responses: [{\n    respondentIdentifier: '1234567890',\n    responseIdentifier: '54321',\n    surveyEntries: [{\n        question: 'How satisfied are you?',\n        answer: 'I really love playing tennis with my friends on Fridays'\n    }]\n  }],\n  callbackUrl: 'https://example.com/callback'\n});"
+            "source": "const response = await api.quality.evaluateBatch({\n  surveyName: 'Customer Satisfaction',\n  responses: [{\n    responseIdentifier: '54321',\n    surveyEntries: [{\n        question: 'How satisfied are you?',\n        answer: 'I really love playing tennis with my friends on Fridays'\n    }]\n  }],\n  callbackUrl: 'https://example.com/callback'\n});"
           },
           {
             "lang": "Python",
-            "source": "response = api.quality.evaluateBatch(\n    survey_name='Customer Satisfaction',\n    responses=[{\n        'respondentIdentifier': '1234567890',\n    responseIdentifier: '54321',\n        'surveyEntries': [{\n            'question': 'How satisfied are you?',\n            'answer': 'I really love playing tennis with my friends on Fridays'\n        }]\n    }],\n    callback_url='https://example.com/callback'\n)"
+            "source": "response = api.quality.evaluateBatch(\n    survey_name='Customer Satisfaction',\n    responses=[{\n        responseIdentifier: '54321',\n        'surveyEntries': [{\n            'question': 'How satisfied are you?',\n            'answer': 'I really love playing tennis with my friends on Fridays'\n        }]\n    }],\n    callback_url='https://example.com/callback'\n)"
           }
         ],
         "requestBody": {
@@ -408,7 +409,7 @@
                   "code": "INVALID_REQUEST",
                   "message": "Invalid request parameters",
                   "details": {
-                    "surveyName": "Survey name is required"
+                    "question": "Question is required"
                   }
                 }
               }
@@ -521,7 +522,7 @@
                   "code": "INVALID_REQUEST",
                   "message": "Invalid request parameters",
                   "details": {
-                    "surveyName": "Survey name is required"
+                    "question": "Question is required"
                   }
                 }
               }
@@ -610,30 +611,29 @@
       "FollowupGenerationRequest": {
         "type": "object",
         "required": [
-          "surveyName",
           "question",
           "answer"
         ],
         "properties": {
           "surveyName": {
             "type": "string",
-            "description": "Name of the survey",
+            "description": "The name of the survey as it will appear in the Aftercare platform",
             "example": "Customer Satisfaction"
           },
           "surveyDescription": {
             "type": "string",
-            "description": "Description of the survey purpose and background",
-            "example": "Quarterly customer satisfaction survey"
+            "description": "A description of the survey purpose and background.\n\nIt will be used to give the AI more context around specific aspects of the survey (e.g. brand/product names, movie names, etc.)",
+            "example": "Quarterly survey tracking customer satisfaction and loyalty for the XYZ Company"
           },
           "question": {
             "type": "string",
-            "description": "The question that was asked",
+            "description": "The question that was asked to the respondent",
             "example": "How likely are you to recommend our service?"
           },
           "questionContext": {
             "type": "string",
-            "description": "A description of what you are trying to learn from the respondent for this question",
-            "example": "Understanding customer loyalty and satisfaction"
+            "description": "A description of what you are trying to learn from the respondent for this question.\n\nThis will be used to give the AI guidance on what followup questions to ask.",
+            "example": "I want to understand specifically why a customer is convinced to recommend our service. If they are not recommending our service, I want to know why."
           },
           "answer": {
             "type": "string",
@@ -642,17 +642,17 @@
           },
           "identifiers": {
             "type": "object",
-            "description": "Optional identifiers to tie responses to a specific survey and question.\nIf provided, Aftercare will use these to generate analytics over your survey responses.",
+            "description": "Optional identifiers to tie responses to a specific survey and question.\nIf provided, Aftercare will use these to generate analytics over your survey responses.\n\nIf included, both survey and question identifiers are required.\n\nSee the [Aftercare Data Model](/aftercareDataModel) to learn more.",
             "required": ["surveyIdentifier", "questionIdentifier"],
             "properties": {
               "surveyIdentifier": {
                 "type": "string",
-                "description": "A unique identifier for the survey.",
+                "description": "Optional unique identifier for the survey.\n\nAftercare will use this to build a data model to associate questions and answers with the survey.",
                 "example": "CSAT-2024-Q1"
               },
               "questionIdentifier": {
                 "type": "string",
-                "description": "A unique identifier for the question.",
+                "description": "Optional unique identifier for the question.\n\nAftercare will use this to build a data model to track questions across a survey",
                 "example": "Q1"
               }
             }
@@ -661,6 +661,11 @@
             "type": "string",
             "description": "A unique identifier for the follow-up response thread.\n\nIf provided, Aftercare will follow-up questions and answers in a thread with the original question and answer.\n\nIf not provided, Aftercare will automatically generate a new thread id you can use in a subsequent follow-up.",
             "example": "7a54b8da-f65d-4946-9c9a-f202e0cc29c8"
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional unique identifier for a respondent's entire response to a survey.\n\nAftercare will use this to build a data model tie together questions and answer pairs for a single response.",
+            "example": "12345"
           },
           "guidanceBehavior": {
             "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
@@ -686,6 +691,11 @@
             "type": "string",
             "description": "The unique identifier for the follow-up thread",
             "example": "7a54b8da-f65d-4946-9c9a-f202e0cc29c8"
+          },
+          "responseIdentifier": {
+            "type": "string",
+            "description": "Optional identifier for the survey response",
+            "example": "12345"
           }
         }
       },
@@ -710,7 +720,7 @@
             "type": "object",
             "description": "Additional error details",
             "example": {
-              "surveyName": "Survey name is required"
+              "question": "Question is required"
             }
           }
         }
@@ -718,7 +728,7 @@
       "QualityIssueType": {
         "type": "string",
         "enum": ["Nonsensical", "Irrelevant", "Low Effort", "LLM Generated", "Repeated Answers", "Duplicate Answers"],
-        "description": "Types of quality issues that can be detected in survey responses.\n\n* `Nonsensical` - Response lacks logical meaning or sense. Likely gibberish.\n* `Irrelevant` - Response does not address the question.\n* `Low Effort` - Respondent did not put in much effort to answer the question. Lacks detail or concrete examples.\n* `LLM Generated` - Response appears to be generated by AI.\n* `Self Duplicated` - Responses from the same respondent contain duplicated content across multiple answers. Only evaluated when multiple survey entries are provided or if a survey identifier and respondent identifier is provided.\n* `Shared Duplicate` - Responses contain duplicated content across different respondents for the same question. Only evaluated if survey identifiers and question identifiers are provided."
+        "description": "Types of quality issues that can be detected in survey responses.\n\n* `Nonsensical` - Response lacks logical meaning or sense. Likely gibberish.\n* `Irrelevant` - Response does not address the question.\n* `Low Effort` - Respondent did not put in much effort to answer the question. Lacks detail or concrete examples.\n* `LLM Generated` - Response appears to be generated by AI.\n* `Self Duplicated` - Responses from the same respondent contain duplicated content across multiple answers. Only evaluated when multiple survey entries are provided or if a survey identifier and response identifier is provided.\n* `Shared Duplicate` - Responses contain duplicated content across different respondents for the same question. Only evaluated if survey identifiers and question identifiers are provided."
       },
       "BatchJobStatus": {
         "type": "string",
@@ -732,19 +742,19 @@
         "properties": {
           "question": {
             "type": "string",
-            "description": "The question that was asked"
+            "description": "The question that was asked to the respondent"
           },
           "questionContext": {
             "type": "string",
-            "description": "Optional context describing what the surveyor is attempting to learn from the respondent for this question"
+            "description": "A description of what you are trying to learn from the respondent for this question"
           },
           "answer": {
             "type": "string",
-            "description": "The response provided by the user"
+            "description": "The answer to the question provided by the respondent"
           },
           "questionIdentifier": {
             "type": "string",
-            "description": "Optional question identifier for tracking duplicates and follow-ups"
+            "description": "Optional unique identifier for the question.\n\nAftercare will use this to build a data model to track questions across a survey"
           },
           "parentQuestionIdentifier": {
             "type": "string",
@@ -799,15 +809,15 @@
       },
       "DataQualityRequest": {
         "type": "object",
-        "required": ["surveyName", "surveyEntries"],
+        "required": ["surveyEntries"],
         "properties": {
           "surveyName": {
             "type": "string",
-            "description": "The name of the survey"
+            "description": "The name of the survey as it will appear in the Aftercare platform"
           },
           "surveyDescription": {
             "type": "string",
-            "description": "Optional description of the survey's purpose"
+            "description": "A description of the survey purpose and background.\n\nIt will be used to give the AI more context around specific aspects of the survey (e.g. brand/product names, movie names, etc.)"
           },
           "surveyEntries": {
             "type": "array",
@@ -818,15 +828,11 @@
           },
           "surveyIdentifier": {
             "type": "string",
-            "description": "Optional unique identifier for the survey.\n\nAftercare will use this to associate questions and answers with the survey."
-          },
-          "respondentIdentifier": {
-            "type": "string",
-            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
+            "description": "Optional unique identifier for the survey.\n\nAftercare will use this to build a data model to associate questions and answers with the survey."
           },
           "responseIdentifier": {
             "type": "string",
-            "description": "Optional unique identifier for the survey response.\n\nAftercare can use this to asscociate survey entries for a single response."
+            "description": "Optional unique identifier for a respondent's entire response to a survey.\n\nAftercare will use this to build a data model tie together questions and answer pairs for a single response."
           },
           "aftercareResponseIdentifier": {
             "type": "number",
@@ -872,10 +878,6 @@
         "type": "object",
         "required": ["surveyEntries"],
         "properties": {
-          "respondentIdentifier": {
-            "type": "string",
-            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
-          },
           "responseIdentifier": {
             "type": "string",
             "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one and return it in the response - useful if the survey response is submitted in multiple parts or submitted over time."
@@ -899,11 +901,11 @@
           },
           "surveyIdentifier": {
             "type": "string",
-            "description": "Optional identifier for the survey.\n\nAftercare will use this to associate questions and answers with the survey."
+            "description": "Optional unique identifier for the survey.\n\nAftercare will use this to build a data model to associate questions and answers with the survey."
           },
           "surveyDescription": {
             "type": "string",
-            "description": "Optional description of the survey's purpose"
+            "description": "A description of the survey purpose and background."
           },
           "responses": {
             "type": "array",
@@ -944,10 +946,6 @@
         "type": "object",
         "required": ["numIssues", "qualityScore", "evaluations"],
         "properties": {
-          "respondentIdentifier": {
-            "type": "string",
-            "description": "Optional unique identifier for the survey respondent.\n\nAftercare can use this to asscociate survey entries for a single respondent."
-          },
           "responseIdentifier": {
             "type": "string",
             "description": "Optional identifier for the survey response. Aftercare can use this to asscociate survey entries for a single response.\n\nIf a response identifier is not provided, Aftercare will generate one."
