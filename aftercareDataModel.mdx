@@ -1,0 +1,72 @@
+---
+title: Aftercare Data Model
+description: "Learn how Aftercare models your survey data and provides analytics"
+icon: "database"
+---
+
+## Introduction
+
+When using our APIs, Aftercare can store your survey data to create our own internal model of the survey.
+
+This allows us to give you a rich set of analytics over your survey responses within the Aftercare platform, including automatic coding and summarization.
+
+## How it works
+
+To allow Aftercare to model your survey data, you'll need to provide a few piece of information that uniquely identify each survey object, what we call `identifiers`:
+
+- `surveyIdentifier`: A string that uniquely identifies the survey across your organization. (e.g. "Survey_01")
+
+- `questionIdentifier`: A string that uniquely identifies a question for a particular survey. (e.g. "Q1")
+
+- `responseIdentifier`: A string that uniquely identifies one respondent's entire response to a survey. This means that if a respondent answers multiple questions within the same survey, they should all have the same `responseIdentifier`. (e.g. "7a54b8da-f65d-4946-9c9a-f202e0cc29c8")
+
+Not all API endpoints require all three identifiers to model your survey data, but you can see the requirements for each endpoint in the API reference.
+
+<Tip>
+  Aftercare only models your survey data if you provide the required identifiers
+  for the particular API call. So don't worry! If you don't want Aftercare to
+  model your survey data, you don't need to provide these identifiers and you
+  can still use the API as normal.
+</Tip>
+
+Note: On the difference between `surveyIdentifier` and `surveyName`:
+
+- `surveyIdentifier`: A string that uniquely identifies the survey across your
+  organization. Think of it as you would any ID for an object in a database.
+  (e.g. "Survey_01")
+- `surveyName`: The name of the survey as it will appear in the Aftercare platform
+  for tracking usage or analytics. You want it to be easy to understand so you
+  can easily tell surveys apart from each other. (e.g. "Brand Tracking XYZ")
+
+## Data Model
+
+This is how the data is modeled in Aftercare:
+
+![Data Model](/images/survey_data_model.png)
+
+- `Survey`: An object containing all the information about one survey. Groups together questions and responses.
+
+- `Question`: An object uniquely identifying one question in a survey.
+
+- `Response`: An object grouping together all the response elements for one respondent's response to a survey.
+
+- `ResponseElement`: One question/answer pair from a respondent's response to a survey.
+
+## Analytics
+
+### Coding:
+
+We use AI to automatically code all your responses. Let us handle generating the code frame or you can provide one yourself!
+
+We categorize and subcategorize to generate a theme hierarchy for your responses. We can perform the coding in real-time as responses come in or at the end when all the responses have been completed.
+
+**For example:**
+
+- Tier 1:
+  ![Tier 1](/images/categorization_tier1.png)
+
+- Tier 2:
+  ![Tier 2](/images/categorization_tier2.png)
+
+- Tier 3:
+  ![Tier 3](/images/categorization_tier3.png)
