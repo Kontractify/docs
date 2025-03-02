@@ -16,13 +16,21 @@ This is how the data is modeled in Aftercare:
 
 ![Data Model](/images/survey_data_model.png)
 
-By tying every question-answer pair (a "response element") to a particular question within a survey, we can analyze the themes and trends across your survey responses.
+- `Survey`: Contains the survey name and description. Is made up of many `questions`.
 
-And by tying each response element to a respondent's full response, we can analyze each question-answer pair in the context of an entire response.
+- `Question`: Contains the question text and many `responseElements` - the answers provided by respondents for this particular question.
+
+- `Response`: Is made up of all the `responseElements` for a single respondent's response to a survey.
+
+- `ResponseElement`: One question/answer pair from a respondent's response to a survey.
+
+By connecting every question-answer pair (a `responseElement`) to a particular question within a survey, we can analyze the themes and trends across your survey responses.
 
 ## Analytics
 
-We currently provide coding/categorization over all responses for each question. We will be developing more analytics features in the near future, so stay tuned!
+If Aftercare can build an internal data model over your survey responses, we will be able to provide analytics to help you understand your data.
+
+We currently provide coding/categorization over all responses for each question. We'll be developing more analytics features in the near future, so stay tuned!
 
 ### Coding:
 
@@ -33,20 +41,32 @@ We categorize and subcategorize as needed to generate a theme hierarchy for your
 **For example:**
 
 - Level 1:
-  Top-level themes for responses to the question: "How did you hear about us?":
-  ![Tier 1](/images/categories1.png)
+
+  <Frame caption="Top-level themes for responses to the question: 'How did you hear about us?'">
+    ![Tier 1](/images/categories1.png)
+  </Frame>
 
 - Level 2:
-  Sub-themes for responses under the "Tech Platforms" category:
-  ![Tier 2](/images/categories3.png)
+
+  <Frame caption="Sub-themes for responses under the 'Tech Platforms' category">
+    ![Tier 2](/images/categories3.png)
+  </Frame>
 
 - Level 3:
-  Responses under the "Product Hunt" category:
-  ![Tier 3](/images/categories2.png)
+  <Frame caption="Responses under the 'Product Hunt' category">
+    ![Tier 3](/images/categories2.png)
+  </Frame>
 
 ## Identifiers
 
 To allow Aftercare to model your survey data, you'll need to provide a few piece of information that uniquely identify each survey object, what we call `identifiers`:
+
+<Tip>
+  Identifiers are optional! Aftercare only models your survey data if you
+  provide the required identifiers for the particular API call. So don't worry
+  -- if you don't want Aftercare to model your survey data, you don't need to
+  provide these identifiers and you can still use the API as normal.
+</Tip>
 
 - `surveyIdentifier`: A string that uniquely identifies the survey across your organization. (e.g. "Survey_01")
 
@@ -54,20 +74,16 @@ To allow Aftercare to model your survey data, you'll need to provide a few piece
 
 - `responseIdentifier`: A string that uniquely identifies one respondent's entire response to a survey. This means that if a respondent answers multiple questions within the same survey, they should all have the same responseIdentifier. (e.g. "7a54b8da-f65d-4946-9c9a-f202e0cc29c8")
 
-Not all API endpoints require all three identifiers to model your survey data, but you can see the requirements for each endpoint in the API reference.
+Not all API endpoints require all three identifiers to model your survey data, but you can see the requirements for each endpoint in the <a href="/api-reference/introduction">API reference</a>.
 
-<Tip>
-  Aftercare only models your survey data if you provide the required identifiers
-  for the particular API call. So don't worry! If you don't want Aftercare to
-  model your survey data, you don't need to provide these identifiers and you
-  can still use the API as normal.
-</Tip>
+<Note>
+  On the difference between `surveyIdentifier` and `surveyName`:
 
-On the difference between `surveyIdentifier` and `surveyName`:
+    - `surveyIdentifier`: A string that uniquely identifies the survey across your
+    organization. Think of it as you would any ID for an object in a database.
+    (e.g. "Survey_01")
+    - `surveyName`: The name of the survey as it will appear in the Aftercare platform
+    for tracking usage or analytics. You want it to be easy to understand so you
+    can easily tell surveys apart from each other. (e.g. "Brand Tracking XYZ")
 
-- `surveyIdentifier`: A string that uniquely identifies the survey across your
-  organization. Think of it as you would any ID for an object in a database.
-  (e.g. "Survey_01")
-- `surveyName`: The name of the survey as it will appear in the Aftercare platform
-  for tracking usage or analytics. You want it to be easy to understand so you
-  can easily tell surveys apart from each other. (e.g. "Brand Tracking XYZ")
+</Note>
