@@ -230,37 +230,37 @@
                       "qualityScore": 30,
                       "qualityIssueChecks": [
                         {
-                          "issue": "Irrelevant",
+                          "type": "Irrelevant",
                           "score": 10,
                           "isIssue": true
                         },
                         {
-                          "issue": "Nonsensical",
+                          "type": "Nonsensical",
                           "score": 80,
                           "isIssue": true
                         },
                         {
-                          "issue": "Incomplete",
+                          "type": "Incomplete",
                           "score": 60,
                           "isIssue": false
                         },
                         {
-                          "issue": "Low Effort",
+                          "type": "Low Effort",
                           "score": 95,
                           "isIssue": true
                         },
                         {
-                          "issue": "LLM Generated",
+                          "type": "LLM Generated",
                           "score": 80,
                           "isIssue": false
                         },
                         {
-                          "issue": "Self Duplicated",
+                          "type": "Self Duplicated",
                           "score": 30,
                           "isIssue": false
                         },
                         {
-                          "issue": "Shared Duplicate",
+                          "type": "Shared Duplicate",
                           "score": 30,
                           "isIssue": false
                         }
