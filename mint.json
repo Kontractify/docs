@@ -49,6 +49,7 @@
       "pages": [
         "introduction",
         "followups",
+        "categorization",
         "dataQuality",
         "languages",
         "aftercareDataModel"
