@@ -588,7 +588,7 @@
         "type": "string",
         "description": "Different ways Aftercare AI will generate follow-up questions based on non-applicable user input.\n\n* `Succinct` - The AI will not generate a follow-up question if the response is irrelevant or complete. This is the default behavior.\nThis occurs when the relevance score is below 25 or the completeness score is above 70.\n* `Redirection` - The AI will return a follow-up question that redirects the user to answering the top-level question if it is irrelevant and incomplete.\nThis occurs when the completeness score is above 70.\n* `Verbose` - The AI will return a follow-up question regardless of the relevance or completeness of the response. This is the most verbose behavior.",
         "enum": ["Succinct", "Redirection", "Verbose"],
-        "default": "Succint"
+        "default": "Succinct"
       },
       "ResponseEvaluation": {
         "type": "object",
