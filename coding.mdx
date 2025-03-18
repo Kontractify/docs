@@ -1,5 +1,5 @@
 ---
-title: AI Categorization
+title: AI Coding
 description: "Categorize and code your survey responses with AI"
 icon: "icons"
 ---
@@ -13,16 +13,16 @@ import {
 
 ## Introduction
 
-<Tip>Looking for the [API reference](/api-reference/followups/create)?</Tip>
+<Tip>Looking for the [API reference](/api-reference/coding/create)?</Tip>
 
-Aftercare takes a relationship based approach to categorization / coding survey responses. We believe that themes and sub-themes 
-are best defined by the relationships between them. 
+Aftercare takes a relationship based approach to / coding survey responses. We believe that themes and sub-themes
+are best defined by the relationships between them.
 
 Aftercare uses a tree of themes and sub-themes to code survey responses and will place the response in the most specific category.
 
 ```mermaid
 flowchart LR
-    Topic>Topic Question] 
+    Topic>Topic Question]
     Topic --> A(category)
     Topic --> B(cateogry)
     A --> A1(subcateogry)
@@ -32,20 +32,23 @@ flowchart LR
     B --> B3(subcateogry)
 ```
 
-## Tree Maintenance  <Icon icon="tree" iconType="duotone"/>
+## Tree Maintenance <Icon icon="tree" iconType="duotone"/>
 
-As new responses come in, get coded, and begin to branch out, the coding tree will quickly grow. 
+As new responses come in, get coded, and begin to branch out, the coding tree will quickly grow.
 Aftercare provides a few knobs to tune how much you want to prune the true.
 
 <CardGroup cols={3}>
   <Card title="Take the wheel" icon="tree-christmas">
-    Aftercare will auto-magically create new themes and sub-themes for you as responses are coded. Let your tree grow organically.
+    Aftercare will auto-magically create new themes and sub-themes for you as
+    responses are coded. Let your tree grow organically.
   </Card>
   <Card title="Bonsai Trees" icon="tree-decorated">
-    Mould the shape you want your tree to take. Lock down the branches you want to keep and let others get auto-generated.
+    Mould the shape you want your tree to take. Lock down the branches you want
+    to keep and let others get auto-generated.
   </Card>
   <Card title="Manual" icon="tree">
-    Manually create the themes and sub-themes and lock them down. Aftercare will not create new themes or sub-themes.
+    Manually create the themes and sub-themes and lock them down. Aftercare will
+    not create new themes or sub-themes.
   </Card>
 </CardGroup>
 
@@ -55,25 +58,27 @@ Aftercare will provide sane default to grow your tree, but we also support addit
 Tree growth is determine by a few parameters and tuning these will change the shape of your tree.
 
 | property                 | description                                                      |
-|--------------------------|------------------------------------------------------------------|
+| ------------------------ | ---------------------------------------------------------------- |
 | `max levels`             | how tall your tree is                                            |
 | `max codes per level`    | how wide each branch gets                                        |
 | `min codes per response` | when create new themes, how many response are required to do so? |
 
 ## Climbing the Tree <Icon icon="monkey" iconType="duotone"/>
 
-When a response is coded, Aftercare will start climbing the tree to find the right codes to visit. 
+When a response is coded, Aftercare will start climbing the tree to find the right codes to visit.
 At every branching path, there are a lot of decisions to make. This section will given an idea of how we traverse the tree,
 but it is not exhaustive to the logic that goes into making these decisions.
 
 <Steps>
   <Step title="Data Quality">
-    Is the response gibberish? Are there multiple components to the response that could be interpreted as different themes?
+    Is the response gibberish? Are there multiple components to the response
+    that could be interpreted as different themes?
   </Step>
   <Step title="Evaluate">
-    Does this response match any of the existing themes? Should we create a new theme? Can we create a new theme?
+    Does this response match any of the existing themes? Should we create a new
+    theme? Can we create a new theme?
   </Step>
   <Step title="Repeat">
-    Determine if we should repeat the process for each branch. 
+    Determine if we should repeat the process for each branch.
   </Step>
 </Steps>
