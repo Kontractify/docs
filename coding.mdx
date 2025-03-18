@@ -24,18 +24,18 @@ Aftercare uses a tree of themes and sub-themes to code survey responses and will
 flowchart LR
     Topic>Topic Question]
     Topic --> A(category)
-    Topic --> B(cateogry)
-    A --> A1(subcateogry)
-    A --> A2(subcateogry)
-    B --> B1(subcateogry)
-    B --> B2(subcateogry)
-    B --> B3(subcateogry)
+    Topic --> B(category)
+    A --> A1(subcategory)
+    A --> A2(subcategory)
+    B --> B1(subcategory)
+    B --> B2(subcategory)
+    B --> B3(subcategory)
 ```
 
 ## Tree Maintenance <Icon icon="tree" iconType="duotone"/>
 
 As new responses come in, get coded, and begin to branch out, the coding tree will quickly grow.
-Aftercare provides a few knobs to tune how much you want to prune the true.
+Aftercare provides a few knobs to tune how much you want to prune the tree.
 
 <CardGroup cols={3}>
   <Card title="Take the wheel" icon="tree-christmas">
@@ -55,18 +55,18 @@ Aftercare provides a few knobs to tune how much you want to prune the true.
 ## Tree Growth <Icon icon="bag-seedling" iconType="duotone"/>
 
 Aftercare will provide sane default to grow your tree, but we also support additional growth factors.
-Tree growth is determine by a few parameters and tuning these will change the shape of your tree.
+Tree growth is determined by a few parameters and tuning these will change the shape of your tree.
 
-| property                 | description                                                      |
-| ------------------------ | ---------------------------------------------------------------- |
-| `max levels`             | how tall your tree is                                            |
-| `max codes per level`    | how wide each branch gets                                        |
-| `min codes per response` | when create new themes, how many response are required to do so? |
+| property                 | description                                                       |
+| ------------------------ | ----------------------------------------------------------------- |
+| `max levels`             | how tall your tree is                                             |
+| `max codes per level`    | how wide each branch gets                                         |
+| `min codes per response` | when create new themes, how many responses are required to do so? |
 
 ## Climbing the Tree <Icon icon="monkey" iconType="duotone"/>
 
 When a response is coded, Aftercare will start climbing the tree to find the right codes to visit.
-At every branching path, there are a lot of decisions to make. This section will given an idea of how we traverse the tree,
+At every branching path, there are a lot of decisions to make. This section will give an idea of how we traverse the tree,
 but it is not exhaustive to the logic that goes into making these decisions.
 
 <Steps>
