@@ -74,6 +74,13 @@
         "api-reference/data-quality/batch",
         "api-reference/data-quality/get"
       ]
+    },
+    {
+      "group": "AI Coding",
+      "pages": [
+        "api-reference/coding/create",
+        "api-reference/coding/get"
+      ]
     }
   ],
   "footerSocials": {
