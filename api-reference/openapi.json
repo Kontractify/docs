@@ -919,7 +919,7 @@
           "default": "unicode"
         },
         "required": false,
-        "description": "Specifies the preferred encoding format for the response data. Use `html` if you are expecting to receivedata that HTML entity encodes non-ASCII characters."
+        "description": "Specifies the preferred encoding format for the response data. Use `html` if you are expecting to receive data that HTML entity encodes non-ASCII characters."
       }
     },
     "schemas": {
