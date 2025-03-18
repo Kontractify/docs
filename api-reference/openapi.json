@@ -49,6 +49,10 @@
         "summary": "Generate a followup question",
         "description": "Generates a contextual followup question based on a survey response",
         "operationId": "generateFollowup",
+        "parameters": [
+          {"$ref": "#/components/parameters/X-Request-Encoding"},
+          {"$ref": "#/components/parameters/X-Response-Encoding"}
+        ],
         "security": [
           {
             "ApiKeyAuth": []
@@ -188,6 +192,9 @@
         "summary": "Evaluate survey response quality",
         "description": "Evaluates the quality of survey responses for potential issues",
         "operationId": "evaluateDataQuality",
+        "parameters": [
+          {"$ref": "#/components/parameters/X-Request-Encoding"}
+        ],
         "security": [
           {
             "ApiKeyAuth": []
@@ -898,6 +905,30 @@
         "in": "header",
         "name": "X-Aftercare-Key",
         "description": "API key for authentication"
+      }
+    },
+    "parameters": {
+      "X-Request-Encoding": {
+        "in": "header",
+        "name": "X-Request-Encoding",
+        "schema": {
+          "type": "string",
+          "enum": ["unicode", "html"],
+          "default": "unicode"
+        },
+        "required": false,
+        "description": "Specifies the encoding format of the request data. Use `html` if you are sending data that HTML entity encodes non-ASCII characters."
+      },
+      "X-Response-Encoding": {
+        "in": "header",
+        "name": "X-Response-Encoding",
+        "schema": {
+          "type": "string",
+          "enum": ["unicode", "html"],
+          "default": "unicode"
+        },
+        "required": false,
+        "description": "Specifies the preferred encoding format for the response data. Use `html` if you are expecting to receivedata that HTML entity encodes non-ASCII characters."
       }
     },
     "schemas": {
