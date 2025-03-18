@@ -751,15 +751,6 @@
             "schema": {
               "type": "string"
             }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "description": "Pagination cursor for large result sets",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -1290,8 +1281,8 @@
           },
           "surveyDescription": {
             "type": "string",
-            "description": "An optional description of the survey's purpose, used to help the AI understand the survey better.",
-            "example": "Quarterly survey tracking customer satisfaction and loyalty for the XYZ Company"
+            "description": "An optional description of the survey's purpose, used to help the AI understand the context behind thesurvey better.",
+            "example": "Quarterly survey tracking customer satisfaction and loyalty for the XYZ Company which sells xyz products"
           },
           "surveyResponses": {
             "type": "array",
@@ -1338,7 +1329,7 @@
         "properties": {
           "maxLevels": {
             "type": "integer",
-            "description": "The maximum number of levels of categorization allowed. For example, if you only want codes and subcodes, set maxLevels to 2. Default: let AI use as many levels as it deems necessary",
+            "description": "The maximum number of levels of categorization allowed. For example, if you only want codes and subcodes, set maxLevels to 2. Default: 2",
             "example": 3,
             "minimum": 1
           },
@@ -1361,7 +1352,7 @@
           },
           "minResponsesPerCode": {
             "type": "integer",
-            "description": "The minimum number of responses that must be present to form a new code. Default: let AI determine create new codes as it deems necessary",
+            "description": "The minimum number of responses that must be present to form a new code. Default: 1",
             "example": 2,
             "minimum": 1
           }
@@ -1439,7 +1430,7 @@
           },
           "questionCodes": {
             "type": "array",
-            "description": "Paginated coding results organized by question identifier. Each question will have its own hierarchical category tree.",
+            "description": "Coding results organized by question identifier. Each question will have its own hierarchical category tree.",
             "items": {
               "$ref": "#/components/schemas/QuestionCodeData"
             }
@@ -1455,7 +1446,7 @@
       "BatchCodingStatus": {
         "type": "string",
         "enum": ["queued", "processing", "completed", "partial_failure", "total_failure"],
-        "description": "Status values for the batch processing job.\n\n* `queued` - Job has been received but processing has not yet started\n* `processing` - Job is currently being processed\n* `completed` - Job has finished processing successfully\n* `partial_failure` - Job has finished processing with some failures\n* `total_failure` - Job encountered an error during processing"
+        "description": "Status values for the batch processing job.\n\n* `queued` - Job has been received but processing has not yet started\n* `processing` - Job is currently being processed\n* `completed` - Job has finished processing successfully\n* `partial_failure` - Job has finished processing with some failures\n* `total_failure` - Job encountered an error during processing and did not complete any results."
       },
       "BatchCodingErrorDetails": {
         "type": "object",
@@ -1479,12 +1470,12 @@
         "properties": {
           "questionIdentifier": {
             "type": "string",
-            "description": "Unique identifier for the question this categorization applies to.",
+            "description": "Unique identifier for the question.",
             "example": "Q1"
           },
           "question": {
             "type": "string",
-            "description": "The question text this categorization applies to.",
+            "description": "The question text.",
             "example": "What did you like about our service?"
           },
           "responseCodes": {
@@ -1527,7 +1518,7 @@
                 "description": "Present when status is 'partial_failure' or 'total_failure'"
               }
             ],
-            "description": "The results structure depends on the status value",
+            "description": "The results structure depends on the status value. If the job is successful, the results will be a list of question codes with a hierarchical tree of codes and subcodes. If the job fails, the results will be the error details.",
             "discriminator": {
               "propertyName": "status",
               "mapping": {
