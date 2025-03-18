@@ -651,7 +651,7 @@
                   "$ref": "#/components/schemas/BatchCodingResponse"
                 },
                 "example": {
-                  "codingJobId": "123e4567-e89b-12d3-a456-426614174000",
+                  "batchJobId": "123e4567-e89b-12d3-a456-426614174000",
                   "surveyIdentifier": "CSAT-2024-Q1",
                   "status": "queued",
                   "results": null
@@ -721,7 +721,7 @@
         }
       }
     },
-    "/api/v1/coding/{codingJobId}": {
+    "/api/v1/coding/{batchJobId}": {
       "get": {
         "tags": ["Coding"],
         "summary": "Get batch coding job status",
@@ -744,7 +744,7 @@
         ],
         "parameters": [
           {
-            "name": "codingJobId",
+            "name": "batchJobId",
             "in": "path",
             "required": true,
             "description": "ID of the batch coding job to check",
@@ -762,7 +762,7 @@
                   "$ref": "#/components/schemas/BatchCodingResponse"
                 },
                 "example": {
-                  "codingJobId": "123e4567-e89b-12d3-a456-426614174000",
+                  "batchJobId": "123e4567-e89b-12d3-a456-426614174000",
                   "surveyIdentifier": "CSAT-2024-Q1",
                   "status": "completed",
                   "results": {
@@ -1489,9 +1489,9 @@
       },
       "BatchCodingResponse": {
         "type": "object",
-        "required": ["codingJobId", "surveyIdentifier", "status"],
+        "required": ["batchJobId", "surveyIdentifier", "status"],
         "properties": {
-          "codingJobId": {
+          "batchJobId": {
             "type": "string",
             "description": "Unique identifier for the coding job",
             "example": "123e4567-e89b-12d3-a456-426614174000"
