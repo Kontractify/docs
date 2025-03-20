@@ -1008,6 +1008,11 @@
           },
           "guidanceBehavior": {
             "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
+          },
+          "responseLanguage": {
+            "type": "string",
+            "description": "Optional language to use for the followup question generation.\n\nIf not provided, Aftercare will respond appropriately to the user's language.",
+            "example": "esperanto"
           }
         }
       },
