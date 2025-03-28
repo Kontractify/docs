@@ -1082,7 +1082,6 @@
       },
       "SurveyEntry": {
         "type": "object",
-        "description": "A question and answer pair from a survey response",
         "required": ["question", "answer"],
         "properties": {
           "question": {
@@ -1166,7 +1165,7 @@
           },
           "surveyEntries": {
             "type": "array",
-            "description": "The collection of question-answer pairs to evaluate",
+            "description": "The collection of question-answer pairs to evaluate.\n\nIf a respondent does not answer a question, DO NOT include that question in the surveyEntries array.",
             "items": {
               "$ref": "#/components/schemas/SurveyEntry"
             }
@@ -1229,7 +1228,7 @@
           },
           "surveyEntries": {
             "type": "array",
-            "description": "The collection of question-answer pairs to evaluate",
+            "description": "The collection of question-answer pairs to evaluate.\n\nIf a respondent does not answer a question, DO NOT include that question in the surveyEntries array.",
             "items": {
               "$ref": "#/components/schemas/SurveyEntry"
             }
