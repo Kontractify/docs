@@ -27,6 +27,42 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 Aftercare will generate a confidence score for each of these metrics along with an overall quality score you can use to compare the quality of your responses.
 Aftercare will let you know which (if any) of these quality metrics were violated and how many violations were found in total.
 
+## Quality Detection Modes
+
+In addition to checking for specific quality issues, Aftercare provides three detection modes that group related issues together for common use cases:
+
+<Card title="Responsiveness" icon="reply">
+  Focuses on identifying poor-quality responses by checking for issues like
+  nonsensical content, irrelevant answers, and low-effort responses.
+  <Tip>
+    Use this mode when you want to quickly identify respondents who aren't
+    engaging meaningfully with your survey.
+  </Tip>
+</Card>
+
+<Card title="Authenticity" icon="shield-check">
+  Concentrates on detecting potentially fraudulent responses by checking for
+  issues like LLM-generated content and duplicated answers across respondents.
+  <Tip>
+    Use this mode when validating that responses are genuine and not
+    artificially generated.
+  </Tip>
+</Card>
+
+<Card title="Composite" icon="list-check">
+  Performs a comprehensive evaluation by checking for all available quality
+  issues. This is the most thorough analysis and is the default mode.
+  <Tip>
+    Use this mode when you want a comprehensive check of all quality factors
+    across your dataset.
+  </Tip>
+</Card>
+
+<Note>
+  If you specify both a detection mode and a list of specific quality issues in
+  your request, Aftercare will prioritize the detection mode.
+</Note>
+
 ## Tips for improving your response quality
 
 While you can use the data quality API to evaluate each response individually, providing a `survey ID`, `question ID`, and `response ID` will help tie together responses across respondents.
