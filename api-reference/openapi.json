@@ -61,11 +61,11 @@
         "x-codeSamples": [
           {
             "lang": "JavaScript",
-              "source": "const response = await api.followups.generate({\n  surveyName: 'Customer Satisfaction',\n  question: 'How likely are you to recommend our service?',\n  answer: 'Very likely, the customer service is excellent',\n  identifiers: {\n    surveyIdentifier: 'CSAT-2024-Q1',\n    questionIdentifier: 'NPS-1'\n  }\n});"
+              "source": "const response = await api.followups.generate({\n  surveyName: 'Customer Satisfaction',\n  question: 'How likely are you to recommend our service?',\n  answer: 'Very likely, the customer service is excellent',\n  surveyIdentifiers: {\n    surveyIdentifier: 'CSAT-2024-Q1',\n    questionIdentifier: 'NPS-1'\n  }\n});"
           },
           {
             "lang": "Python",
-            "source": "response = api.followups.generate(\n    survey_name='Customer Satisfaction',\n    question='How likely are you to recommend our service?',\n    answer='Very likely, the customer service is excellent',\n    identifiers={\n        'survey_identifier': 'CSAT-2024-Q1',\n        'question_identifier': 'NPS-1'\n    }\n)"
+            "source": "response = api.followups.generate(\n    survey_name='Customer Satisfaction',\n    question='How likely are you to recommend our service?',\n    answer='Very likely, the customer service is excellent',\n    surveyIdentifiers={\n        'survey_identifier': 'CSAT-2024-Q1',\n        'question_identifier': 'NPS-1'\n    }\n)"
           }
         ],
         "requestBody": {
@@ -81,7 +81,7 @@
                 "question": "How likely are you to recommend our service?",
                 "questionContext": "I want to understand specifically why a customer is convinced to recommend our service. If they are not recommending our service, I want to know why.",
                 "answer": "Very likely, the customer service is excellent",
-                "identifiers": {
+                "surveyIdentifiers": {
                   "surveyIdentifier": "CSAT-2024-Q1",
                   "questionIdentifier": "NPS-1"
                 },
@@ -979,7 +979,7 @@
             "description": "The answer to the question provided by the respondent",
             "example": "Very likely, the customer service is excellent"
           },
-          "identifiers": {
+          "surveyIdentifiers": {
             "type": "object",
             "description": "Optional identifiers to tie responses to a specific survey and question.\nIf provided, Aftercare will use these to generate analytics over your survey responses.\n\nIf included, both survey and question identifiers are required.\n\nSee the [Aftercare Data Model](/aftercareDataModel) to learn more.",
             "required": ["surveyIdentifier", "questionIdentifier"],
