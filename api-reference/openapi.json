@@ -996,6 +996,11 @@
               }
             }
           },
+          "responseLanguage": {
+            "type": "string",
+            "description": "Optional language to use for the followup question generation.\n\nIf not provided, Aftercare will default to the language it determines best matches the response.\n\nSet response language to `match_response_language` to automatically set the language of the generated follow up question to the language of the respondent's answer.",
+            "example": "French"
+          },
           "threadId": {
             "type": "string",
             "description": "A unique identifier for the follow-up response thread.\n\nIf provided, Aftercare will follow-up questions and answers in a thread with the original question and answer.\n\nIf not provided, Aftercare will automatically generate a new thread id you can use in a subsequent follow-up.",
@@ -1009,11 +1014,6 @@
           "guidanceBehavior": {
             "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
           },
-          "responseLanguage": {
-            "type": "string",
-            "description": "Optional language to use for the followup question generation.\n\nIf not provided, Aftercare will respond appropriately to the user's language.",
-            "example": "French"
-          }
         }
       },
       "FollowupGenerationResponse": {
