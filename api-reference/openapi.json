@@ -1011,7 +1011,7 @@
           },
           "responseLanguage": {
             "type": "string",
-            "description": "Optional language to use for the followup question generation.\n\nIf not provided, Aftercare will respond appropriately to the user's language.",
+            "description": "Optional language to use for the followup question generation.\n\nIf not provided, Aftercare will default to English.\n\nSet response language to `auto_detect` to automatically set the language of the generated follow up question to the language of the user's response.",
             "example": "French"
           }
         }
