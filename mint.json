@@ -48,11 +48,16 @@
       "group": "Get Started",
       "pages": [
         "introduction",
+        "aftercareDataModel",
+        "languages"
+      ]
+    },
+    {
+      "group": "Core Products",
+      "pages": [
         "followups",
         "coding",
-        "dataQuality",
-        "languages",
-        "aftercareDataModel"
+        "dataQuality"
       ]
     },
     {
