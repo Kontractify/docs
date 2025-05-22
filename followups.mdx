@@ -1,5 +1,5 @@
 ---
-title: AI Followup Generation
+title: AI Followups
 description: "Get started generating smart followup questions on-the-fly using AI"
 icon: "message-question"
 ---
@@ -9,26 +9,36 @@ import {
   completenessDef,
   relevanceDef,
   guidanceDef,
+  nonsensicalDef,
+  questionContextDef,
 } from "/snippets/definitions.mdx";
 
 ## Introduction
 
 <Tip>Looking for the [API reference](/api-reference/followups/create)?</Tip>
 
+Aftercare provides two paradigms for followup generation:
+
+- **Lite**: Aftercare will generate a followup question based on the topic question and response. Our fastest and most cost effective model.
+- **Enriched**: Aftercare will generate a followup question enriched with metrics about the question / response pair. Use these metrics for disqualification or to end the current line of questioning.
+
+### Enriched Followup Generation Process
+
 Aftercare AI uses a few steps to generate your followup questions.
 
 <Steps>
   <Step title="Survey Context">
-    Provide context about the survey,{" "}
-    <Tooltip tip={topicQuestionDef}>`topic question`</Tooltip>, and response
+    Provide the question / answer pair, <Tooltip tip={questionContextDef}>`question context`</Tooltip>, and survey context
+    <Note>Providing context is optional, but highly recommended for better followup generation.</Note>
+
   </Step>
   <Step title="Evaluate">
-    Determine the <Tooltip tip={relevanceDef}>`relevance`</Tooltip> and{" "}
-    <Tooltip tip={completenessDef}>`completeness`</Tooltip> of the survey.
+    Determine the <Tooltip tip={relevanceDef}>`relevance`</Tooltip>, <Tooltip tip={completenessDef}>`completeness`</Tooltip> and{" "}
+    <Tooltip tip={nonsensicalDef}>`nonsensical score`</Tooltip> for the question / response pair.
   </Step>
   <Step title="Generate">
-    Create the followup question using{" "}
-    <Tooltip tip={guidanceDef}>`guidance`</Tooltip>.
+    Conditionally generate the followup question using{" "} the followup
+    <Tooltip tip={guidanceDef}>`guidance`</Tooltip>. Defaults to succinct. 
   </Step>
 </Steps>
 
@@ -55,7 +65,7 @@ Aftercare will evaluate the survey, topic question, and response and provide two
 
 - `completeness`: {completenessDef}. Responses high in completeness answer the topic question well, with detail.
 - `relevance`: {relevanceDef}. Responses low in relevance are usually no-answer, troll answers, or just completely unrelated answers.
-
+- `nonsensical`: {nonsensicalDef}. Responses high in nonsensicality are usually garbled, incoherent, or logically inconsistent.
 These scores are used in the next section, [generation](/followups#generation)
 
 ### Generation
