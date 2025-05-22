@@ -13,6 +13,13 @@ icon: "badge-check"
 Aftercare evaluates the quality of your responses in the context of the response itself and compared to all other survey responses. Not all
 quality checks are built the same, so we've built a few different metrics to give you a holistic view of your responses.
 
+<Note type="warning">
+  The `qualityScore` field is deprecated and will be removed in a future
+  release. Please use `demeritScore` instead. The `demeritScore` provides the
+  same information but with a more intuitive scale - higher scores indicate
+  lower quality responses.
+</Note>
+
 ## Components
 
 Aftercare AI breaks down the quality of your responses into a few different metrics:
@@ -24,7 +31,7 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 - `Self-duplication`: how similar a particular answer is to previous answers in the same survey response.
 - `Shared-duplication`: how similar the response is to other responses for a particular question across respondents
 
-Aftercare will generate a confidence score for each of these metrics along with an overall quality score you can use to compare the quality of your responses.
+Aftercare will generate a confidence score for each of these metrics along with an overall demerit score from 0-100 you can use to compare the quality of your responses. The higher the demerit score, the lower the quality of the data.
 Aftercare will let you know which (if any) of these quality metrics were violated and how many violations were found in total.
 
 ## Quality Detection Modes
