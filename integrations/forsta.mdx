@@ -1,0 +1,399 @@
+---
+title: "Forsta (Decipher)"
+description: "Set up Aftercare with your Forsta (Decipher) surveys"
+---
+
+- [Single Followup Question](#single-followup-question)
+- [Multiple Followup Questions](#multiple-followup-questions)
+- [Data Quality Evaluation](#data-quality-evaluation)
+
+## Single Followup Question
+
+To add a single followup question for an open-end, follow these steps:
+
+First, initialize the API request data in an `<exec>` block. This sets up the headers and prepares the request body:
+
+```decipher
+<exec>
+# Set up API headers with your Aftercare API key
+p.api_headers = {
+    "X-Aftercare-Key": "<AFTERCARE API KEY>",
+    "Content-Type": "application/json"
+}
+
+# Get the question and response from your survey
+question = TopicQuestion.title  # replace with your topic question variable
+response = TopicQuestion.val  # replace with your topic question variable
+
+# Prepare the API request body
+p.api_data = '{
+    "question": "' + question + '",
+    "answer": "' + response + '",
+    "surveyName": "<Your Survey Name>",  # optional
+    "surveyDescription": "<Description of your survey>",  # optional
+    "questionContext": "<What you want to learn from the respondent>",  # optional
+    "guidanceBehavior": "Succinct"  # optional, defaults to "Succinct"
+}'
+</exec>
+```
+
+Next, make the API request using the `<logic>` block. This sends the request to Aftercare's API and waits for the response:
+
+```decipher
+<logic
+    label="followup_request"
+    api:data="p.api_data"
+    api:headers="p.api_headers"
+    api:method="POST"
+    api:url="https://surveys.getaftercare.com/api/v1/followups"
+    sst="0"
+    uses="api.1"
+/>
+```
+
+After receiving the response, process it in another `<exec>` block. This handles both successful responses and errors:
+
+```decipher
+<exec>
+# Check if the API call was successful
+if followup_request.status == 200:
+    # Extract the followup question from the response
+    p.followup_question = followup_request.r["followupQuestion"]
+else:
+    # Use a fallback question if the API call fails
+    p.followup_question = "Is there anything more you'd like to add?"
+</exec>
+```
+
+Now, display the followup question to the respondent using a `<textarea>` element:
+
+```decipher
+<suspend />
+<textarea
+    label="FollowupQuestion"
+    height="10"
+    optional="0"
+    width="50">
+    <title>${p.followup_question}</title>
+</textarea>
+```
+
+Finally, store the followup question in a variable for data export and reporting:
+
+```decipher
+<suspend />
+<exec>FOLLOWUP_Q_TEXT.val = p.followup_question</exec>
+<suspend />
+<text
+    label="FOLLOWUP_Q_TEXT"
+    optional="0"
+    size="25"
+    where="execute,survey,report">
+    <title>FOLLOWUP_Q_TEXT</title>
+</text>
+<suspend />
+```
+
+## Multiple Followup Questions
+
+To implement multiple followup questions that continue until the AI determines no more questions are needed, follow these steps:
+
+First, initialize the API request data and tracking variables. This sets up the headers and prepares the variables we'll need to track multiple followups:
+
+```decipher
+<exec>
+# Set up API headers with your Aftercare API key
+p.api_headers = {
+    "X-Aftercare-Key": "<AFTERCARE API KEY>",
+    "Content-Type": "application/json"
+}
+
+# Get the initial question and response
+p.question = TopicQuestion.title  # replace with your topic question variable
+p.initial_response = TopicQuestion.val  # replace with your topic question variable
+
+# Initialize tracking variables
+p.max_followups = 10  # replace with number of maximum desired follwups for one question
+p.current_followup = 1
+p.total_followups_shown = 0
+
+# Create arrays to store all followup questions and responses
+p.followup_questions = []
+p.followup_responses = []
+
+# Initialize thread ID variable
+p.thread_id = None
+</exec>
+```
+
+Next, set up the loop structure that will handle multiple followups. This includes the loop label and the initial check for maximum followups:
+
+```decipher
+# --- START THE FOLLOWUP LOOP ---
+
+<label name="GENERATE_FOLLOWUP" />
+
+# Check if we've reached the maximum number of followups
+<exec>
+p.continue_followup = p.current_followup <= p.max_followups
+</exec>
+
+<goto condition="!p.continue_followup" label="END_FOLLOWUPS" />
+```
+
+Now, prepare the API request. For the first followup, we use the initial question and response. For subsequent followups, we use the previous followup question and response:
+
+```decipher
+<exec>
+if p.current_followup == 1:
+    # First followup uses initial question and response
+    p.prev_question = p.question
+    p.prev_response = p.initial_response
+    # First followup doesn't need a thread ID
+    p.api_data = '{
+        "question": "' + p.prev_question + '",
+        "answer": "' + p.prev_response + '",
+        "surveyName": "<Your Survey Name>",  # optional
+        "surveyDescription": "<Description of your survey>",  # optional
+        "questionContext": "<What you want to learn from the respondent>",  # optional
+        "guidanceBehavior": "Succinct"  # optional, defaults to "Succinct"
+    }'
+else:
+    # Subsequent followups use the previous followup question and response
+    p.prev_question = p.followup_questions[p.current_followup - 2]  # Arrays are 0-indexed
+    p.prev_response = p.followup_responses[p.current_followup - 2]
+    # Include thread ID for followups after the first one
+    p.api_data = '{
+        "question": "' + p.prev_question + '",
+        "answer": "' + p.prev_response + '",
+        "surveyName": "<Your Survey Name>",  # optional
+        "surveyDescription": "<Description of your survey>",  # optional
+        "questionContext": "<What you want to learn from the respondent>",  # optional
+        "guidanceBehavior": "Succinct",  # optional, defaults to "Succinct"
+        "threadId": "' + p.thread_id + '"  # required for followups after the first one
+    }'
+</exec>
+```
+
+Make the API call to get the followup question:
+
+```decipher
+<logic
+    label="followup_request"
+    api:data="p.api_data"
+    api:headers="p.api_headers"
+    api:method="POST"
+    api:url="https://surveys.getaftercare.com/api/v1/followups"
+    sst="0"
+    uses="api.1"
+/>
+```
+
+Process the API response and check if we should continue with followups:
+
+```decipher
+<exec>
+# Check if the API call was successful
+if followup_request.status == 200:
+    # Extract the followup question from the response
+    p.current_followup_text = followup_request.r["followupQuestion"]
+
+    # For the first followup, store the thread ID for subsequent followups
+    if p.current_followup == 1:
+        p.thread_id = followup_request.r["threadId"]
+else:
+    # Use a fallback question if the API call fails
+    p.current_followup_text = ""
+
+# Check if the followup text is blank, which means we should stop
+p.is_blank_followup = p.current_followup_text.strip() == ""
+
+# Store the current followup text in a variable that matches the current followup number
+set("FOLLOWUP_TEXT_" + str(p.current_followup), p.current_followup_text)
+</exec>
+
+# Skip to the end if we got a blank followup
+<goto condition="p.is_blank_followup" label="END_FOLLOWUPS" />
+```
+
+Display the followup question to the respondent and get their response:
+
+```decipher
+<textarea
+    label="FollowupQuestion_${p.current_followup}"
+    height="10"
+    optional="1"
+    width="50"
+>
+    <title>${p.current_followup_text}</title>
+</textarea>
+
+<suspend />
+
+<exec>
+# Get the response
+p.current_response = eval("FollowupQuestion_" + str(p.current_followup) + ".unsafe_val")
+
+# Check if response is blank
+p.is_blank_response = p.current_response.strip() == ""
+
+# Store the followup question and response in our arrays
+p.followup_questions.append(p.current_followup_text)
+p.followup_responses.append(p.current_response)
+
+# Increment the followup counter and total followups shown
+p.total_followups_shown = p.current_followup
+p.current_followup += 1
+
+# Store the response in a variable
+set("FOLLOWUP_RESPONSE_" + str(p.total_followups_shown), p.current_response)
+</exec>
+```
+
+Check if we should continue with more followups:
+
+```decipher
+# If the response was blank, end the followups
+<goto condition="p.is_blank_response" label="END_FOLLOWUPS" />
+
+# Otherwise, continue with the next followup
+<goto label="GENERATE_FOLLOWUP" />
+```
+
+Finally, set up the end of the followup section and store all responses for reporting:
+
+```decipher
+# --- END OF FOLLOWUPS ---
+
+<label name="END_FOLLOWUPS" />
+
+# Store the total number of followups shown
+<exec>TOTAL_FOLLOWUPS.val = p.total_followups_shown</exec>
+
+<text
+    label="TOTAL_FOLLOWUPS"
+    optional="0"
+    size="5"
+    where="execute,survey,report"
+>
+    <title>Total number of followups shown</title>
+</text>
+
+<exec>
+# Store responses in their respective variables
+for i in range(p.total_followups_shown):
+    set("FOLLOWUP_RESPONSE_" + str(i + 1), p.followup_responses[i])
+</exec>
+```
+
+## Data Quality Evaluation
+
+To evaluate the quality of responses using Aftercare's Data Quality API, follow these steps:
+
+First, initialize the API request data in an `<exec>` block. This sets up the headers and prepares the request body:
+
+```decipher
+<exec>
+# Set up API headers with your Aftercare API key
+p.api_headers = {
+    "X-Aftercare-Key": "<AFTERCARE API KEY>",
+    "Content-Type": "application/json"
+}
+
+# Get the questions and responses from your survey. You can evaluate multiple answers from the respondent at once
+p.survey_entries = []
+p.survey_entries.append({
+    "question": TopicQuestion1.title,  # The question that was asked to the respondent
+    "answer": TopicQuestion1.val,      # The answer to the question provided by the respondent
+    "questionIdentifier": "q1",        # Optional unique identifier for the question
+})
+p.survey_entries.append({
+    "question": TopicQuestion2.title,
+    "answer": TopicQuestion2.val,
+    "questionIdentifier": "q2",
+})
+
+# Prepare the API request body
+p.api_data = '{
+    "surveyName": "<Your Survey Name>",  # The name of the survey as it will appear in the Aftercare platform
+    "surveyDescription": "<Description of your survey>",  # Description of the survey purpose and background
+    "surveyIdentifier": "survey_123",  # Optional unique identifier for the survey
+    "responseIdentifier": "resp_123",  # Optional unique identifier for a respondent's entire response
+    "surveyEntries": [
+        {
+            "question": "' + p.survey_entries[0]["question"] + '",
+            "answer": "' + p.survey_entries[0]["answer"] + '",
+            "questionIdentifier": "' + p.survey_entries[0]["questionIdentifier"] + '",
+        },
+        {
+            "question": "' + p.survey_entries[1]["question"] + '",
+            "answer": "' + p.survey_entries[1]["answer"] + '",
+            "questionIdentifier": "' + p.survey_entries[1]["questionIdentifier"] + '",
+        }
+    ]
+}'
+</exec>
+```
+
+Next, make the API request using the `<logic>` block. This sends the request to Aftercare's Data Quality API and waits for the response:
+
+```decipher
+<logic
+    label="quality_request"
+    api:data="p.api_data"
+    api:headers="p.api_headers"
+    api:method="POST"
+    api:url="https://surveys.getaftercare.com/api/v1/data-quality/evaluate"
+    sst="0"
+    uses="api.1"
+/>
+```
+
+After receiving the response, process it in another `<exec>` block. This handles both successful responses and errors:
+
+```decipher
+<exec>
+# Check if the API call was successful
+if quality_request.status == 200:
+    # Extract the overall quality metrics
+    p.has_issues = quality_request.r["hasIssues"]  # Whether any issues were detected
+    p.num_issues = quality_request.r["numIssues"]  # Number of quality issues detected across all entries
+    p.quality_score = quality_request.r["qualityScore"]  # Overall quality score (0-100)
+
+    # Process individual evaluations
+    p.evaluations = quality_request.r["evaluations"]
+    for i, evaluation in enumerate(p.evaluations):
+        # Each evaluation contains:
+        # - surveyEntry: The original question and answer
+        # - numIssues: Number of issues detected for this entry
+        # - qualityScore: Quality score for this entry (0-100)
+        # - qualityIssueChecks: Detailed quality checks
+        # - hasIssues: Whether any issues were detected
+
+        # Store the quality score for this entry
+        set("QUALITY_SCORE_" + str(i + 1), evaluation["qualityScore"])
+
+        # Store the number of issues for this entry
+        set("NUM_ISSUES_" + str(i + 1), evaluation["numIssues"])
+
+        # Store whether issues were detected
+        set("HAS_ISSUES_" + str(i + 1), evaluation["hasIssues"])
+</exec>
+```
+
+You can then either:
+
+1. Store these values in your survey data for analysis
+2. Access the Aftercare platform to view and download the quality evaluations
+
+## Best Practices
+
+1. **API Key Security**: Store your API key in a secure location and never expose it in client-side code.
+2. **Error Handling**: Always implement fallback questions in case the API call fails.
+
+## Troubleshooting
+
+- If you're not receiving followup questions, check your API key and network connectivity.
+- For blank responses, verify that your question and response variables are correctly named.
+
+Need help? [Contact our support team](mailto:anand@getaftercare.com)

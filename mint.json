@@ -49,7 +49,17 @@
       "pages": [
         "introduction",
         "aftercareDataModel",
-        "languages"
+        "languages",
+        {
+          "group": "Integrations",
+          "icon": "plug",
+          "pages": [
+            "integrations",
+            "integrations/forsta",
+            "integrations/qualtrics",
+            "integrations/alchemer"
+          ]
+        }
       ]
     },
     {

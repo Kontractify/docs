@@ -1,0 +1,350 @@
+---
+title: "Qualtrics"
+description: "Set up Aftercare with your Qualtrics surveys"
+---
+
+- [Single Followup Question](#single-followup-question)
+- [Multiple Followup Questions](#multiple-followup-questions)
+- [Data Quality Evaluation](#data-quality-evaluation)
+
+## Single Followup Question
+
+For single followup questions, you can make use of the [Web Service](https://www.qualtrics.com/support/survey-platform/survey-module/survey-flow/advanced-elements/web-service/) feature in Qualtrics.
+
+### Setup Instructions
+
+1. Create two Text Entry questions and place them in different blocks:
+
+   - First question: Your topic question
+   - Second question: The followup question
+
+2. Set up the followup question text to use a piping reference:
+
+   ```
+   ${e://Field/followup_question}
+   ```
+
+3. Between the blocks, create a Web Service with this configuration:
+
+```json
+URL: https://surveys.getaftercare.com/api/v1/followups
+Method: POST
+Body Parameters: application/json
+  - question = "${q://QID1/QuestionText}" # replace "QID1" with your Qualtrics question identifier
+  - answer = "${q://QID1/ChoiceTextEntryValue}" # replace "QID1" with your Qualtrics question identifier
+  - questionContext = <what you want to learn from the respondent> # optional
+Custom Headers:
+  - X-Aftercare-Key = sk_wcmaphuvCF9YL3M3gfzWuobkGkdXMTyJ
+Set Embedded Data
+  - followup_question = followupQuestion
+```
+
+## Multiple Followup Questions
+
+For multiple followup questions, you can utilize Javascript combined with the Loop & Merge feature.
+
+### 1. Set Up Your Survey Structure
+
+- Create a survey with at least two blocks:
+  - **Topic Question Block:** Contains your primary open-ended question.
+  - **Followup Question Block:** Will display each followup question.
+
+### 2. Add Embedded Data Fields
+
+In the Survey Flow, add the following Embedded Data fields to track the conversation:
+
+- `TopicQuestion` (stores the original question text)
+- `TopicResponse` (stores the original question response)
+- `LastQuestion` (stores the most recent question asked)
+- `LastResponse` (stores the most recent response given)
+- `FollowupText` (stores the current followup question from API)
+- `ContinueFollowups` (1 = continue loop, 0 = end loop)
+- `FollowupCount` (tracks how many followup questions have been asked)
+
+### 3. Create a Loop & Merge Block
+
+- Set up Loop & Merge on the Followup Question Block.
+- Use a hidden numeric question to control the loop count (see below for code).
+
+### 4. Add JavaScript to the Prime Question
+
+Add the following JavaScript to your topic question to initialize variables and make the first API call:
+
+```javascript
+Qualtrics.SurveyEngine.addOnPageSubmit(function () {
+  // Get the question text and response
+  var questionText = this.getQuestionInfo().QuestionText;
+  var response = this.getTextValue();
+
+  // Remove any HTML tags from the text
+  questionText = questionText.replace(/<[^>]*>/g, "");
+
+  // Store in embedded data
+  Qualtrics.SurveyEngine.setEmbeddedData("TopicQuestion", questionText);
+  Qualtrics.SurveyEngine.setEmbeddedData("TopicResponse", response);
+
+  // Initialize tracking variables
+  Qualtrics.SurveyEngine.setEmbeddedData("LastQuestion", questionText);
+  Qualtrics.SurveyEngine.setEmbeddedData("LastResponse", response);
+  Qualtrics.SurveyEngine.setEmbeddedData("ContinueFollowups", 1); // Start with asking followups enabled
+  Qualtrics.SurveyEngine.setEmbeddedData("FollowupCount", 0); // No followups asked yet
+
+  // Make API call to get the first followup question
+  makeFollowupAPICall(questionText, response);
+});
+```
+
+### 5. Define the API Call Function
+
+This function makes the API call to get the next followup question from Aftercare:
+
+```javascript
+function makeFollowupAPICall(question, response) {
+  // API call parameters
+  var apiUrl = "https://surveys.getaftercare.com/api/v1/followups";
+  var apiKey = "REPLACE_WITH_YOUR_API_KEY";
+  var langId = "en"; // or whatever language you need
+
+  // Prepare API data
+  var apiData = {
+    question: question,
+    answer: response,
+    surveyName: "<Your Survey Name>", // optional
+    surveyDescription: "<Description of your survey>", // optional
+    questionContext: "<What you want to learn from the respondent>", // optional
+    guidanceBehavior: "Succinct", // optional, defaults to "Succinct"
+  };
+
+  // Make the AJAX call
+  jQuery.ajax({
+    url: apiUrl,
+    type: "POST",
+    data: JSON.stringify(apiData),
+    contentType: "application/json",
+    headers: {
+      "X-Aftercare-Key": "<AFTERCARE API KEY>",
+      "Content-Type": "application/json",
+    },
+    success: function (data) {
+      var followupText = data.followupQuestion || "";
+
+      // Store the followup text
+      Qualtrics.SurveyEngine.setEmbeddedData("FollowupText", followupText);
+
+      // Determine if we should continue looping or not
+      if (followupText.trim() === "") {
+        // Stop looping if we got a blank followup
+        Qualtrics.SurveyEngine.setEmbeddedData("ContinueFollowups", 0);
+        setLoopCountToZero();
+      } else {
+        // Continue looping if we got a valid followup
+        Qualtrics.SurveyEngine.setEmbeddedData("ContinueFollowups", 1);
+        setLoopCountToOne();
+      }
+    },
+    error: function () {
+      // Use fallback text on error
+      var fallbackText = "Is there anything more you'd like to add?";
+      Qualtrics.SurveyEngine.setEmbeddedData("FollowupText", fallbackText);
+      Qualtrics.SurveyEngine.setEmbeddedData("ContinueFollowups", 1);
+      setLoopCountToOne();
+    },
+  });
+}
+```
+
+### 6. Control the Loop Count with a Hidden Numeric Question
+
+Add this JavaScript to your hidden numeric question to hide it and set a default value:
+
+```javascript
+Qualtrics.SurveyEngine.addOnload(function () {
+  // Hide this question completely
+  this.hideChoices();
+  this.hideLabel();
+  jQuery("#" + this.questionId).hide();
+
+  // Set a default value
+  this.setChoiceValue(1);
+});
+```
+
+Define helper functions to set the loop count:
+
+```javascript
+function setLoopCountToZero() {
+  // Replace QID1 with the ID of your hidden numeric question
+  jQuery("#QID1").val(0);
+  jQuery("#QID1").trigger("keyup");
+}
+
+function setLoopCountToOne() {
+  // Replace QID1 with the ID of your hidden numeric question
+  jQuery("#QID1").val(1);
+  jQuery("#QID1").trigger("keyup");
+}
+```
+
+### 7. Add JavaScript to the Followup Question in the Loop & Merge Block
+
+This code displays the followup question and determines whether to continue asking followups:
+
+```javascript
+Qualtrics.SurveyEngine.addOnload(function () {
+  var self = this;
+
+  // On the first loop, increment the followup count
+  var currentLoopNumber = "${lm://CurrentLoopNumber}";
+  if (currentLoopNumber === "1") {
+    // Get current followup count and increment it
+    var followupCount = parseInt("${e://Field/FollowupCount}") || 0;
+    followupCount++;
+    Qualtrics.SurveyEngine.setEmbeddedData("FollowupCount", followupCount);
+  }
+
+  // Check if we should continue asking followups
+  var continueProbing = "${e://Field/ContinueFollowups}" === "1";
+  if (!continueProbing) {
+    // Skip to end of survey or next block by clicking the Next button
+    self.clickNextButton();
+    return;
+  }
+
+  // Get the followup text from embedded data
+  var followupText = "${e://Field/FollowupText}";
+
+  // Display the followup text as the question text
+  if (followupText && followupText.trim() !== "") {
+    self.questionContainer.find(".QuestionText").html(followupText);
+  }
+});
+```
+
+When the respondent answers the followup question, this code determines whether to continue or stop:
+
+```javascript
+Qualtrics.SurveyEngine.addOnPageSubmit(function () {
+  // Get the response
+  var response = this.getTextValue();
+
+  // If response is blank, stop asking followups
+  if (!response || response.trim() === "") {
+    Qualtrics.SurveyEngine.setEmbeddedData("ContinueFollowups", 0);
+  } else {
+    // Save this as the last response
+    Qualtrics.SurveyEngine.setEmbeddedData("LastResponse", response);
+
+    // Get the last question
+    var lastQuestion = "${e://Field/FollowupText}";
+    Qualtrics.SurveyEngine.setEmbeddedData("LastQuestion", lastQuestion);
+
+    // Make API call to get the next followup
+    makeFollowupAPICall(lastQuestion, response);
+  }
+});
+```
+
+### 8. (Optional) Store All Followup Questions and Responses
+
+If you want to store all followup questions and responses for later analysis, add this code to the followup question's `addOnPageSubmit` function:
+
+```javascript
+// Get current followup count
+var followupCount = parseInt("${e://Field/FollowupCount}") || 0;
+
+// Store this followup question and response
+var storedFollowupQuestions = "${e://Field/StoredFollowupQuestions}" || "";
+var storedFollowupResponses = "${e://Field/StoredFollowupResponses}" || "";
+
+// Add delimiter only if we already have stored data
+if (storedFollowupQuestions !== "") {
+  storedFollowupQuestions += "||";
+  storedFollowupResponses += "||";
+}
+
+// Add new data
+storedFollowupQuestions += followupText;
+storedFollowupResponses += response;
+
+// Save to embedded data
+Qualtrics.SurveyEngine.setEmbeddedData(
+  "StoredFollowupQuestions",
+  storedFollowupQuestions
+);
+Qualtrics.SurveyEngine.setEmbeddedData(
+  "StoredFollowupResponses",
+  storedFollowupResponses
+);
+```
+
+# Data Quality Evaluation
+
+To evaluate the quality of responses using Aftercare's Data Quality API in Qualtrics, follow these steps:
+
+### 1. Prepare Your Survey Data
+
+- Identify the questions and responses you want to evaluate for quality. For example, you might want to evaluate all open-ended responses in your survey for each respondent.
+
+### 2. Add a Web Service Element in Survey Flow
+
+- Insert a Web Service element after the question you want to evaluate or at the end of the survey.
+- Configure the Web Service as follows:
+
+- **URL:** [https://surveys.getaftercare.com/api/v1/data-quality/evaluate](https://surveys.getaftercare.com/api/v1/data-quality/evaluate)
+- **Method:** POST
+- **Body Parameters:** (Content-Type: application/json)
+
+  Example body (replace QID1, QID2, etc. with your actual Qualtrics question IDs):
+
+  ```json
+  {
+    "surveyName": "<Your Survey Name>",
+    "surveyDescription": "<Description of your survey>",
+    "surveyIdentifier": "survey_123", // optional
+    "responseIdentifier": "resp_123", // optional
+    "surveyEntries": [
+      {
+        "question": "${q://QID1/QuestionText}",
+        "answer": "${q://QID1/TextEntry}",
+        "questionIdentifier": "QID1" // optional
+      },
+      {
+        "question": "${q://QID2/QuestionText}",
+        "answer": "${q://QID2/TextEntry}",
+        "questionIdentifier": "QID2" // optional
+      }
+    ]
+  }
+  ```
+
+- **Custom Headers:**
+  - `X-Aftercare-Key`: `<AFTERCARE API KEY>`
+  - `Content-Type`: `application/json`
+
+### 3. Set Embedded Data
+
+- In the Web Service element, set embedded data fields to store the results from the API response. For example:
+  - `qualityScore` = qualityScore
+  - `numIssues` = numIssues
+  - `hasIssues` = hasIssues
+  - You can also set embedded data for each entry in `evaluations` if you want to track per-question quality.
+
+### 4. Use the Results
+
+You can either:
+
+- Store these values in your survey data and export for analysis
+- Or, you can access the Aftercare platform to view and download the quality evaluations.
+
+## Best Practices
+
+1. **API Key Security**: Store your API key in a secure location and never expose it in client-side code.
+2. **Error Handling**: Always implement fallback questions in case the API call fails.
+
+## Troubleshooting
+
+- If you're not receiving followup questions, check your API key and network connectivity.
+- For blank responses, verify that your question and response variables are correctly named.
+- Make sure your Web Service is properly configured with the correct headers and parameters.
+
+Need help? [Contact our support team](mailto:support@getaftercare.com)
