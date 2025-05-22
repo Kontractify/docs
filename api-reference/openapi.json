@@ -1,4 +1,5 @@
 {
+  "x-docs-deprecation": "Note: The 'qualityScore' field is deprecated and will be removed in a future release. Please use 'demeritScore' instead.",
   "openapi": "3.0.0",
   "info": {
     "title": "Followup Generation API",
@@ -231,6 +232,7 @@
                 "example": {
                   "numIssues": 1,
                   "qualityScore": 30,
+                  "demeritScore": 70,
                   "evaluations": [
                     {
                       "surveyEntry": {
@@ -239,6 +241,7 @@
                       },
                       "numIssues": 1,
                       "qualityScore": 30,
+                      "demeritScore": 70,
                       "qualityIssueChecks": [
                         {
                           "type": "Irrelevant",
@@ -1132,7 +1135,7 @@
       },
       "SurveyEntryEvaluation": {
         "type": "object",
-        "required": ["surveyEntry", "numIssues", "qualityScore", "qualityIssueChecks"],
+        "required": ["surveyEntry", "numIssues", "qualityScore", "demeritScore", "qualityIssueChecks"],
         "properties": {
           "surveyEntry": {
             "$ref": "#/components/schemas/SurveyEntry"
@@ -1148,7 +1151,14 @@
           },
           "qualityScore": {
             "type": "number",
-            "description": "A score between 0 and 100 that represents the overall quality of the individual survey entry.\n\nThe score is a weighted average of the quality issue scores.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "description": "A score between 0 and 100 that represents the overall quality of the individual survey entry. (Deprecated: use demeritScore instead)",
+            "minimum": 0,
+            "maximum": 100,
+            "deprecated": true
+          },
+          "demeritScore": {
+            "type": "number",
+            "description": "A score between 0 and 100 that represents the overall quality of the individual survey entry.\n\nThe score is a weighted average of the quality issue scores.\n\nThe higher the score, the greater the likelihood and severity of data quality issues.",
             "minimum": 0,
             "maximum": 100
           },
@@ -1205,7 +1215,7 @@
       },
       "DataQualityResponse": {
         "type": "object",
-        "required": ["numIssues", "qualityScore", "evaluations", "aftercareResponseIdentifier"],
+        "required": ["numIssues", "qualityScore", "demeritScore", "evaluations", "aftercareResponseIdentifier"],
         "properties": {
           "numIssues": {
             "type": "integer",
@@ -1218,7 +1228,13 @@
           },
           "qualityScore": {
             "type": "number",
-              "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "description": "A score between 0 and 100 that represents the overall quality of the survey response. (Deprecated: use demeritScore instead)",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "demeritScore": {
+            "type": "number",
+            "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe higher the score, the greater the likelihood and severity of data quality issues.",
             "minimum": 0,
             "maximum": 100
           },
@@ -1401,7 +1417,7 @@
       },
       "RespondentEvaluation": {
         "type": "object",
-        "required": ["numIssues", "qualityScore", "evaluations"],
+        "required": ["numIssues", "qualityScore", "demeritScore", "evaluations"],
         "properties": {
           "responseIdentifier": {
             "type": "string",
@@ -1415,6 +1431,12 @@
           "qualityScore": {
             "type": "number",
             "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe lower the score, the greater the likelihood and severity of data quality issues.",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "demeritScore": {
+            "type": "number",
+            "description": "A score between 0 and 100 that represents the overall quality of the survey response.\n\nThe score is an average of the quality scores across all survey entries.\n\nThe higher the score, the greater the likelihood and severity of data quality issues.",
             "minimum": 0,
             "maximum": 100
           },
