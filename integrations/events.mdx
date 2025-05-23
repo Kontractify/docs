@@ -1,0 +1,100 @@
+---
+title: "Events"
+description: "Capture events from your survey platform"
+---
+
+## Overview
+
+Capture real-time events from your survey platform and analyze user behavior.
+
+## 1. Setup
+
+Add the following code snippet to your survey platform and replace `exampleTextarea` with the ID of your textbox.
+
+```typescript events.ts {1}
+const textbox_id = 'exampleTextarea';
+// Max number of characters to store in history 
+const max_characters_for_history = 25000;
+
+document.addEventListener('DOMContentLoaded', function () {
+  const textarea = document.getElementById(textbox_id);
+
+  const key_history = [];
+  const paste_history = [];
+
+  let text_over_length = false;
+  let t0; // performance baseline
+
+  // track keydown times by code
+  const keyDownTimes = new Map();
+
+  function recordEntry(entry) {
+    if (text_over_length) return;
+    // compute combined length of both histories plus this new entry
+    const combined = [...key_history, ...paste_history, entry];
+    const length_of_history = JSON.stringify(combined).length;
+    if (length_of_history > max_characters_for_history) {
+      text_over_length = true;
+      return;
+    }
+    if ('k' in entry) {
+      key_history.push(entry);
+    } else {
+      paste_history.push(entry);
+    }
+  }
+
+  // --- Paste events ---
+  textarea.addEventListener('paste', function (e) {
+    if (t0 == null) t0 = performance.now();
+    const t = Math.round(performance.now() - t0);
+
+    const pasted = (e.clipboardData || window.clipboardData).getData('text');
+    /** @type {SurveyEntryPaste} */
+    const entry = { t, c: pasted };
+    recordEntry(entry);
+  });
+
+  // --- Keydown: start timing ---
+  textarea.addEventListener('keydown', function (e) {
+    if (t0 == null) t0 = performance.now();
+    if (!keyDownTimes.has(e.code)) {
+      keyDownTimes.set(e.code, performance.now());
+    }
+  });
+
+  // --- Keyup: finalize the keystroke entry ---
+  textarea.addEventListener('keyup', function (e) {
+    const downTs = keyDownTimes.get(e.code);
+    if (downTs == null) return;
+    keyDownTimes.delete(e.code);
+
+    const upTs = performance.now();
+    const t = Math.round(downTs - t0);
+    const ht = Math.round(upTs - downTs);
+
+    /** @type {SurveyEntryKeyStroke} */
+    const entry = {
+      k: e.key,
+      c: e.code,
+      t,
+      ht
+    };
+    recordEntry(entry);
+  });
+});
+```
+
+
+## 2. Send events to Aftercare
+
+Add the key events and paste events to the `SurveyEntry` object. 
+
+Aftercare will always evaluate the keystroke event issues if key events are present.
+
+See the [API reference](https://docs.getaftercare.com/api-reference/data-quality/evaluate) for more information.
+
+
+
+
+
