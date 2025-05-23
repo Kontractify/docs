@@ -1,0 +1,281 @@
+---
+title: "Alchemer"
+description: "Set up Aftercare with your Alchemer surveys"
+---
+
+## Single Followup Question
+
+To add a single followup question after an open-end in Alchemer, follow these steps:
+
+1. **Create your open-ended question** (e.g., Q1).
+2. **Add a Hidden Value action** to store the followup question (e.g., `followup_question`).
+3. **Add a Text Entry question for the respondent's answer.**
+4. **Add a JavaScript Action** after the respondent's answer and before displaying the followup question.
+5. **Paste the following code into the JavaScript editor:**
+   - Update the `PREPPOP_MAPPINGS` array to match your hidden value question IDs and the JSON keys you want to map.
+   - Set `hiddenAnswerQID` to the Question ID of your answer field.
+   - Set `URL` and `apiKey` as needed.
+
+```javascript
+document.addEventListener("DOMContentLoaded", function () {
+  const PREPPOP_MAPPINGS = [
+    { jsonKey: "followupQuestion", qid: 20 }, // Update 20 to your hidden value QID
+  ];
+
+  const URL = "https://surveys.getaftercare.com/api/v1/followups"; // Update to your endpoint
+  const apiKey = ""; // Update to your API key
+  const hiddenAnswerQID = 27; // Update to your answer field QID
+
+  const getHiddenInputValue = (qid) => {
+    const surveyId = SGAPI.survey.surveyObject.id;
+    const pageId = SGAPI.survey.pageId;
+    const inputId = `sgE-${surveyId}-${pageId}-${qid}-element`;
+    const input = document.getElementById(inputId);
+    return input ? input.value : "";
+  };
+
+  const getElemByQid = (qid, section = "element") => {
+    const id = `sgE-${SGAPI.survey.surveyObject.id}-${SGAPI.survey.pageId}-${qid}-${section}`;
+    return document.getElementById(id);
+  };
+
+  const hidePageContent = () => {
+    const content = document.querySelector(".sg-page-content");
+    if (content) content.style.display = "none";
+  };
+
+  const prepop = (mappings, data) => {
+    mappings.forEach(({ jsonKey, qid }) => {
+      const val = data[jsonKey];
+      const elem = getElemByQid(qid);
+      if (elem) elem.value = val || "";
+    });
+  };
+
+  const clickNextButton = () => {
+    const nextButton =
+      document.querySelector("#sg_NextButton") ||
+      document.querySelector("#sg_SubmitButton");
+    if (nextButton) {
+      nextButton.disabled = false;
+      nextButton.style.display = "block";
+      try {
+        nextButton.click();
+        setTimeout(() => {
+          const clickEvent = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          nextButton.dispatchEvent(clickEvent);
+        }, 300);
+      } catch (e) {
+        console.error("Error clicking button:", e);
+      }
+    } else {
+      setTimeout(clickNextButton, 200);
+    }
+  };
+
+  const executeMain = () => {
+    try {
+      const answer = getHiddenInputValue(hiddenAnswerQID);
+      const payload = {
+        question: "Question", // replace with the text of the topic question
+        answer: answer,
+        guidanceBehavior: "Verbose",
+      };
+      hidePageContent();
+      fetch(URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Aftercare-Key": apiKey,
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("API response:", data);
+          prepop(PREPPOP_MAPPINGS, data);
+          setTimeout(clickNextButton, 200);
+        })
+        .catch((err) => {
+          console.error("API error:", err);
+          setTimeout(clickNextButton, 500);
+        });
+    } catch (e) {
+      console.error("Main execution error:", e);
+    }
+  };
+
+  executeMain();
+});
+```
+
+## Data Quality Evaluation
+
+To evaluate response quality in Alchemer using JavaScript, follow these steps:
+
+1. **Add a Hidden Value action** for each field you want to store from the API response (e.g., `qualityScore`, `isFlagged`).
+2. **Add a Text Entry question for the respondent's answer.**
+3. **Add a JavaScript Action** after the answer.
+4. **Paste the following code into the JavaScript editor:**
+   - Update the `mappings` array in `CONFIG` to match your hidden value question IDs and the JSON keys you want to map.
+   - Set `hiddenAnswerQID` to the Question ID of your answer field.
+   - Set `api.url` and `api.key` as needed.
+
+```javascript
+document.addEventListener("DOMContentLoaded", function () {
+  // Configuration constants
+  const CONFIG = {
+    mappings: [
+      { jsonKey: "qualityScore", qid: 34 },
+      { jsonKey: "isFlagged", qid: 35 },
+    ],
+    api: {
+      url: "https://surveys.getaftercare.com/api/v1/data-quality/evaluate", // Update to your endpoint
+      key: "", // Update to your API key
+    },
+    hiddenAnswerQID: 27, // Update to your answer field QID
+    retryDelay: 200,
+    buttonClickDelay: 300,
+  };
+
+  // Helper functions
+  const helpers = {
+    getElementId: (qid, section = "element") =>
+      `sgE-${SGAPI.survey.surveyObject.id}-${SGAPI.survey.pageId}-${qid}-${section}`,
+
+    getElement: (qid, section = "element") =>
+      document.getElementById(helpers.getElementId(qid, section)),
+
+    getHiddenInputValue: (qid) => {
+      const input = helpers.getElement(qid);
+      return input ? input.value : "";
+    },
+
+    hidePageContent: () => {
+      const content = document.querySelector(".sg-page-content");
+      if (content) content.style.display = "none";
+    },
+
+    prepopFields: (mappings, data) => {
+      mappings.forEach(({ jsonKey, qid }) => {
+        const value = data[jsonKey];
+        const element = helpers.getElement(qid);
+        if (element) element.value = value || "";
+      });
+    },
+
+    clickNextButton: () => {
+      const nextButton =
+        document.querySelector("#sg_NextButton") ||
+        document.querySelector("#sg_SubmitButton");
+
+      if (!nextButton) {
+        return setTimeout(helpers.clickNextButton, CONFIG.retryDelay);
+      }
+
+      nextButton.disabled = false;
+      nextButton.style.display = "block";
+
+      try {
+        // Try native click first
+        nextButton.click();
+
+        // Fallback to dispatching click event
+        setTimeout(() => {
+          const clickEvent = new MouseEvent("click", {
+            bubbles: true,
+            cancelable: true,
+            view: window,
+          });
+          nextButton.dispatchEvent(clickEvent);
+        }, CONFIG.buttonClickDelay);
+      } catch (error) {
+        console.error("Failed to click button:", error);
+      }
+    },
+
+    // Save data to localStorage
+    saveData: (data) => {
+      try {
+        localStorage.setItem(
+          "aftercareDataQualityResults",
+          JSON.stringify(data)
+        );
+        console.log("Data saved successfully to localStorage");
+      } catch (error) {
+        console.error("Failed to save data to localStorage:", error);
+      }
+    },
+  };
+
+  // Main function
+  const main = async () => {
+    try {
+      // Get the answer value
+      const answer = helpers.getHiddenInputValue(CONFIG.hiddenAnswerQID);
+
+      // Prepare the API payload
+      const payload = {
+        surveyName: "Response Quality Evaluation",
+        surveyEntries: [
+          {
+            question: "Question", // Replace this with the text of the question
+            answer: answer,
+          },
+        ],
+      };
+
+      // Hide the page content while processing
+      helpers.hidePageContent();
+
+      try {
+        // Make the API request
+        const response = await fetch(CONFIG.api.url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Aftercare-Key": CONFIG.api.key,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API returned status ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Save the API response data
+        helpers.saveData(data);
+
+        // Populate the form fields with API response
+        helpers.prepopFields(CONFIG.mappings, data);
+
+        // Proceed to next page
+        setTimeout(helpers.clickNextButton, CONFIG.retryDelay);
+      } catch (apiError) {
+        console.error("API request failed:", apiError);
+        setTimeout(helpers.clickNextButton, CONFIG.retryDelay * 2.5);
+      }
+    } catch (error) {
+      console.error("Main execution error:", error);
+      // Still try to proceed to next page on error
+      setTimeout(helpers.clickNextButton, CONFIG.retryDelay);
+    }
+  };
+
+  // Start execution
+  main();
+});
+```
+
+You can either:
+
+- Store these values in your survey data and export for analysis
+- Or, you can access the Aftercare platform to view and download the quality evaluations.
+
+If you have any questions, please [contact our support team](mailto:support@getaftercare.com).
