@@ -1016,7 +1016,7 @@
           },
           "guidanceBehavior": {
             "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
-          },
+          }
         }
       },
       "FollowupGenerationResponse": {
@@ -1088,6 +1088,42 @@
         "enum": ["queued", "processing", "completed", "failed"],
         "description": "Status values for batch processing jobs"
       },
+      "SurveyEntryPaste": {
+        "type": "object",
+        "required": ["t", "c"],
+        "properties": {
+          "t": {
+            "type": "number",
+            "description": "Timestamp of the paste event"
+          },
+          "c": {
+            "type": "string",
+            "description": "Clipboard content that was pasted"
+          }
+        }
+      },
+      "SurveyEntryKeyStroke": {
+        "type": "object",
+        "required": ["k", "t", "ht", "c"],
+        "properties": {
+          "k": {
+            "type": "string",
+            "description": "Key value (e.g., \"a\", \"Enter\")"
+          },
+          "t": {
+            "type": "number",
+            "description": "Keydown timestamp (from performance.now())"
+          },
+          "ht": {
+            "type": "number",
+            "description": "Hold time of the key"
+          },
+          "c": {
+            "type": "string",
+            "description": "Physical key code (e.g., \"KeyA\", \"Enter\")"
+          }
+        }
+      },
       "SurveyEntry": {
         "type": "object",
         "required": ["question", "answer"],
@@ -1111,6 +1147,20 @@
           "parentQuestionIdentifier": {
             "type": "string",
             "description": "Optional identifier of a previous question in a follow-up thread"
+          },
+          "keyEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntryKeyStroke"
+            },
+            "description": "An optional array of key strokes."
+          },
+          "pasteEvents": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SurveyEntryPaste"
+            },
+            "description": "An optional array of paste events."
           }
         }
       },
