@@ -57,7 +57,8 @@
             "integrations",
             "integrations/forsta",
             "integrations/qualtrics",
-            "integrations/alchemer"
+            "integrations/alchemer",
+            "integrations/events"
           ]
         }
       ]
