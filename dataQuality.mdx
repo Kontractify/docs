@@ -30,6 +30,7 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 - `Llm-generated`: how likely the response is to be AI or LLM generated.
 - `Self-duplication`: how similar a particular answer is to previous answers in the same survey response.
 - `Shared-duplication`: how similar the response is to other responses for a particular question across respondents
+- `Keystroke-issues`: a higher score indicates suspicious non-human keystroke patterns. See [Keystroke event collection](#keystroke-event-collection) for more information.
 
 Aftercare will generate a confidence score for each of these metrics along with an overall demerit score from 0-100 you can use to compare the quality of your responses. The higher the demerit score, the lower the quality of the data.
 Aftercare will let you know which (if any) of these quality metrics were violated and how many violations were found in total.
@@ -69,6 +70,22 @@ In addition to checking for specific quality issues, Aftercare provides three de
   If you specify both a detection mode and a list of specific quality issues in
   your request, Aftercare will prioritize the detection mode.
 </Note>
+
+## Keystroke event collection
+
+Collect real-time keystroke events from a respondent's browser and use them to detect bot activity. Aftercare will compute the following metrics:
+
+- `total keystrokes`: the total number of keystrokes in the response
+- `average hold time`: the average time a key is held down for
+- `hold time standard deviation`: the standard deviation of the hold time of each key
+- `average digraph delay`: the average time between digraphs (two-character combinations)
+- `digraph delay standard deviation`: the standard deviation of the time between digraphs
+- `digraph delay p90`: the 90th percentile of the time between digraphs
+- `pause ratio`: the ratio of pause to keystroke events
+
+From these metrics, Aftercare will compute a `keystroke-issues` score from 0-100. See these metrics in the data quality console in the platform. 
+
+To get started, see the [Events API](/integrations/events) documentation.
 
 ## Tips for improving your response quality
 
