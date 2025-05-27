@@ -31,6 +31,7 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 - `Self-duplication`: how similar a particular answer is to previous answers in the same survey response.
 - `Shared-duplication`: how similar the response is to other responses for a particular question across respondents
 - `Keystroke-issues`: a higher score indicates suspicious non-human keystroke patterns. See [Keystroke event collection](#keystroke-event-collection) for more information.
+- `Honeypot`: a higher score indicates that the respondant has likely fallen for the honeypot phrase. See [Honeypot detection](#honeypot-detection) for more information.
 
 Aftercare will generate a confidence score for each of these metrics along with an overall demerit score from 0-100 you can use to compare the quality of your responses. The higher the demerit score, the lower the quality of the data.
 Aftercare will let you know which (if any) of these quality metrics were violated and how many violations were found in total.
@@ -86,6 +87,15 @@ Collect real-time keystroke events from a respondent's browser and use them to d
 From these metrics, Aftercare will compute a `keystroke-issues` score from 0-100. See these metrics in the data quality console in the platform. 
 
 To get started, see the [Events API](/integrations/events) documentation.
+
+## Honeypot detection
+
+With the increasing sophistication of LLM powered bots, it is becoming more difficult to detect them using simple heuristics. 
+
+A honeypot is a hidden phrase that an LLM reading the page will see but a human will not. We can use a honeypot phrase to poison the LLMs context 
+and detect if a respondent has fallen for the honeypot phrase.
+
+Pass a `honeypot phrase` to the data quality API and Aftercare will detect if a respondent has fallen for the honeypot phrase. See the [Data Quality API](/api-reference/data-quality/evaluate) documentation for more information.
 
 ## Tips for improving your response quality
 
