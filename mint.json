@@ -96,7 +96,8 @@
       "group": "AI Coding",
       "pages": [
         "api-reference/coding/create",
-        "api-reference/coding/get"
+        "api-reference/coding/get",
+        "api-reference/brand-coding/create"
       ]
     }
   ],
