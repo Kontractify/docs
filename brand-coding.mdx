@@ -1,0 +1,23 @@
+---
+title: AI Brand Coding
+description: "Our fastest and most cost effective model. Code brands with AI"
+icon: "store"
+---
+
+import {
+  brandContextDef,
+} from "/snippets/definitions.mdx";
+
+## Introduction
+
+<Tip>Looking for the [API reference](/api-reference/coding/create)?</Tip>
+
+Extract brand names from survey responses into a flat list. 
+
+## Best Practices
+
+There are a few tricks to get the best results out of brand coding. 
+
+- add brands in the  <Tooltip tip={brandContextDef}>`brandContext`</Tooltip> to seed the list of brands. This does not need to be an exhaustive list, but a few brands will help the model to understand the context.
+- add an industry description to the <Tooltip tip={brandContextDef}>`brandContext`</Tooltip> to help the model understand the context.
+

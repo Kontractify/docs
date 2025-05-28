@@ -67,7 +67,8 @@
       "group": "Core Products",
       "pages": [
         "followups",
-        "coding",
+        "thematic-coding",
+        "brand-coding",
         "dataQuality"
       ]
     },
