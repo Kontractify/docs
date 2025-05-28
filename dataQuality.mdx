@@ -29,7 +29,7 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 - `Low-effort`: how much effort was put into the response. (length, specific details, etc.)
 - `Llm-generated`: how likely the response is to be AI or LLM generated.
 - `Self-duplication`: how similar a particular answer is to previous answers in the same survey response.
-- `Shared-duplication`: how similar the response is to other responses for a particular question across respondents
+- `Shared-duplication`: how similar the response is to other responses for a particular question across respondents. Duplicates can be found in the data quality console in the platform.
 - `Keystroke-issues`: a higher score indicates suspicious non-human keystroke patterns. See [Keystroke event collection](#keystroke-event-collection) for more information.
 
 Aftercare will generate a confidence score for each of these metrics along with an overall demerit score from 0-100 you can use to compare the quality of your responses. The higher the demerit score, the lower the quality of the data.
