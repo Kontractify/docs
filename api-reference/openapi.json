@@ -1161,6 +1161,10 @@
               "$ref": "#/components/schemas/SurveyEntryPaste"
             },
             "description": "An optional array of paste events."
+          },
+          "honeypotPhrase": {
+            "type": "string",
+            "description": "Optional string. If provided, Aftercare will check if the response contains any honey pot words."
           }
         }
       },
