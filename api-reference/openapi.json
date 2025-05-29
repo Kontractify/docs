@@ -890,6 +890,152 @@
           }
         }
       }
+    },
+    "/api/v1/brand-coding": {
+      "post": {
+        "tags": ["Coding"],
+        "summary": "Create a brand coding job",
+        "description": "Analyze survey responses in the context of specified brands and code them into hierarchical categories",
+        "operationId": "createBrandCodingJob",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "x-codeSamples": [
+          {
+            "lang": "JavaScript",
+            "source": "const response = await api.coding.createBrandJob({\n  surveyIdentifier: 'CSAT-2024-Q1',\n  surveyName: 'Customer Satisfaction',\n  surveyDescription: 'Tracking customer satisfaction and loyalty',\n  surveyResponses: [\n    {\n      questionIdentifier: 'Q1',\n      question: 'What did you like about our service?',\n      brandContext: {\n        industryDescription: 'E-commerce retail',\n        brands: [\n          { name: 'Acme Store', variations: ['Acme', 'AcmeOnline'] }\n        ]\n      },\n      responseEntries: [\n        {\n          responseIdentifier: '12345',\n          answer: 'The customer service representatives were very helpful.',\n          followupResponses: [\n            { question: 'Which rep assisted you?', answer: 'Alice from support' }\n          ]\n        }\n      ]\n    }\n  ]\n});"
+          },
+          {
+            "lang": "Python",
+            "source": "response = api.coding.create_brand_job(\n    survey_identifier='CSAT-2024-Q1',\n    survey_name='Customer Satisfaction',\n    survey_description='Tracking customer satisfaction and loyalty',\n    survey_responses=[{\n        'question_identifier': 'Q1',\n        'question': 'What did you like about our service?',\n        'brand_context': {\n            'industry_description': 'E-commerce retail',\n            'brands': [\n                {'name': 'Acme Store', 'variations': ['Acme', 'AcmeOnline']}\n            ]\n        },\n        'response_entries': [\n            {\n                'response_identifier': '12345',\n                'answer': 'The customer service representatives were very helpful.',\n                'followup_responses': [\n                    {'question': 'Which rep assisted you?', 'answer': 'Alice from support'}\n                ]\n            }\n        ]\n    }]\n)"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchCodingRequest"
+              },
+              "example": {
+                "surveyIdentifier": "CSAT-2024-Q1",
+                "surveyName": "Customer Satisfaction",
+                "surveyDescription": "Tracking customer satisfaction and loyalty for the XYZ Company",
+                "surveyResponses": [
+                  {
+                    "questionIdentifier": "Q1",
+                    "question": "What did you like about our service?",
+                    "brandContext": {
+                      "industryDescription": "E-commerce retail",
+                      "brands": [
+                        {
+                          "name": "Acme Store",
+                          "variations": ["Acme", "AcmeOnline"]
+                        }
+                      ]
+                    },
+                    "responseEntries": [
+                      {
+                        "responseIdentifier": "12345",
+                        "answer": "The customer service representatives were very helpful and resolved my issue quickly.",
+                        "followupResponses": [
+                          {
+                            "question": "Which feature was most important?",
+                            "answer": "Fast shipping"
+                          }
+                        ]
+                      },
+                      {
+                        "responseIdentifier": "12346",
+                        "answer": "I liked the easy-to-use website and fast delivery."
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Brand coding job accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchCodingResponse"
+                },
+                "example": {
+                  "batchJobId": "123e4567-e89b-12d3-a456-426614174001",
+                  "surveyIdentifier": "CSAT-2024-Q1",
+                  "status": "queued",
+                  "results": null
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_REQUEST",
+                  "message": "Invalid request parameters",
+                  "details": {
+                    "brandContext": "industryDescription is required"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INVALID_API_KEY",
+                  "message": "Invalid or missing API key"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "INTERNAL_ERROR",
+                  "message": "An unexpected error occurred"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "code": "GATEWAY_TIMEOUT",
+                  "message": "The server took too long to respond"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -926,6 +1072,54 @@
       }
     },
     "schemas": {
+      "BrandContext": {
+        "type": "object",
+        "required": ["industryDescription","brands"],
+        "properties": {
+          "industryDescription": {
+            "type": "string",
+            "description": "Description of the industry the brand is in",
+            "example": "Consumer electronics"
+          },
+          "brands": {
+            "type": "array",
+            "description": "Common names for the brand and any variations",
+            "items": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Canonical brand name",
+                  "example": "Acme Corp"
+                },
+                "variations": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Alternative names or spellings",
+                  "example": ["ACME", "Acme Corporation"]
+                }
+              }
+            }
+          }
+        }
+      },
+      "FollowupResponse": {
+        "type": "object",
+        "required": ["question","answer"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "description": "The follow-up question that was asked",
+            "example": "What features of our product stood out most?"
+          },
+          "answer": {
+            "type": "string",
+            "description": "The answer provided to the follow-up",
+            "example": "I loved the night-vision mode."
+          }
+        }
+      },
       "FollowupGenerationGuidanceBehavior": {
         "type": "string",
         "description": "Different ways Aftercare AI will generate follow-up questions based on non-applicable user input.\n\n* `Succinct` - The AI will not generate a follow-up question if the response is irrelevant or complete. This is the default behavior.\nThis occurs when the relevance score is below 25 or the completeness score is above 70.\n* `Redirection` - The AI will return a follow-up question that redirects the user to answering the top-level question if it is irrelevant and incomplete.\nThis occurs when the completeness score is above 70.\n* `Verbose` - The AI will return a follow-up question regardless of the relevance or completeness of the response. This is the most verbose behavior.",
@@ -1161,6 +1355,10 @@
               "$ref": "#/components/schemas/SurveyEntryPaste"
             },
             "description": "An optional array of paste events."
+          },
+          "honeypotPhrase": {
+            "type": "string",
+            "description": "Optional string. If provided, Aftercare will check if the response contains any honey pot words."
           }
         }
       },
@@ -1385,32 +1583,25 @@
       },
       "SurveyQuestionData": {
         "type": "object",
-        "required": ["questionIdentifier", "question", "responseEntries"],
+        "required": ["questionIdentifier","question","brandContext","responseEntries"],
         "properties": {
           "questionIdentifier": {
             "type": "string",
-            "description": "Unique identifier for the question.",
-            "example": "Q1"
+            "description": "Unique identifier for the question",
+            "example": "q1"
           },
           "question": {
             "type": "string",
-            "description": "The question that was asked.",
-            "example": "What did you like about our service?"
+            "description": "The question that was asked",
+            "example": "What do you like about our product?"
           },
-          "questionContext": {
-            "type": "string",
-            "description": "Optional context describing what the surveyor is attempting to learn from the respondent.",
-            "example": "I want to understand what aspects of our customer experience are working well."
+          "brandContext": {
+            "$ref": "#/components/schemas/BrandContext",
+            "description": "Additional context about the brands for this question"
           },
           "responseEntries": {
             "type": "array",
-            "description": "The collection of answers for this question to code.",
-            "items": {
-              "$ref": "#/components/schemas/ResponseEntry"
-            }
-          },
-          "codingOptions": {
-            "$ref": "#/components/schemas/CodingOptions"
+            "items": { "$ref": "#/components/schemas/ResponseEntry" }
           }
         }
       },
@@ -1658,17 +1849,22 @@
       },
       "ResponseEntry": {
         "type": "object",
-        "required": ["responseIdentifier", "answer"],
+        "required": ["responseIdentifier","answer"],
         "properties": {
           "responseIdentifier": {
             "type": "string",
             "description": "Unique identifier for this response entry",
-            "example": "12345"
+            "example": "resp-123"
           },
           "answer": {
             "type": "string",
             "description": "The respondent's answer to the question",
-            "example": "The customer service representatives were very helpful and resolved my issue quickly."
+            "example": "I really enjoy the battery life."
+          },
+          "followupResponses": {
+            "type": "array",
+            "description": "Any follow-up question/answer pairs for this response",
+            "items": { "$ref": "#/components/schemas/FollowupResponse" }
           }
         }
       }
