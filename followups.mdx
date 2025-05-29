@@ -11,6 +11,7 @@ import {
   guidanceDef,
   nonsensicalDef,
   questionContextDef,
+  threadIdDef,
 } from "/snippets/definitions.mdx";
 
 ## Introduction
@@ -109,3 +110,22 @@ Set response language to `match_response_language` to automatically set the lang
   Use the Verbose behavior, completeness score, and relevance score to implement
   your own followup behavior.
 </Tip>
+
+## Multi-turn followups
+
+Aftercare can generate followups for multi-turn questions. 
+
+<Steps>
+  <Step title="Send the initial question">
+    Provide the initial top level question / answer pair to Aftercare. We will generate a followup question and a <Tooltip tip={threadIdDef}>`thread id`</Tooltip>.
+  </Step>
+  <Step title="Decide when to stop">
+    For enriched followups, set a guidance behavior to automatically stop asking followups or use the heuristics to decide yourself. 
+  </Step>
+  <Step title="Generate">
+    Pass the `thread id` to the followup generation API and we will generate a followup question. 
+    <Warning>
+      Just pass in the new followup question / response pair and the `thread id`! Do not pass in the initial question / answer pair again.
+    </Warning>
+  </Step>
+</Steps>
