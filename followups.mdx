@@ -12,6 +12,7 @@ import {
   nonsensicalDef,
   questionContextDef,
   threadIdDef,
+  consistencyDef,
 } from "/snippets/definitions.mdx";
 
 ## Introduction
@@ -68,6 +69,7 @@ Aftercare will evaluate the survey, topic question, and response and provide two
 - `relevance`: {relevanceDef}. Responses low in relevance are usually no-answer, troll answers, or just completely unrelated answers.
 - `nonsensical`: {nonsensicalDef}. Responses high in nonsensicality are usually garbled, incoherent, or logically inconsistent.
 These scores are used in the next section, [generation](/followups#generation)
+- `consistency`: {consistencyDef}. Responses high in consistency are logically consistent, non-contradictory, and coherent. 
 
 ### Generation
 
