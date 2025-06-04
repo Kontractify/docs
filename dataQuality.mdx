@@ -24,6 +24,12 @@ quality checks are built the same, so we've built a few different metrics to giv
 
 Aftercare AI breaks down the quality of your responses into a few different metrics:
 
+### Respondent level metrics
+
+- `Inconsistency`: how inconsistent a respondent is across multiple responses. Higher scores indicate more contradictions and inconsistencies in the responses.
+
+### Response level metrics
+
 - `Nonsense`: how coherent and logical the response itself is. (ie, gibberish, troll responses, etc.)
 - `Relevance`: how pertinent the response is to the question.
 - `Low-effort`: how much effort was put into the response. (length, specific details, etc.)
@@ -96,6 +102,13 @@ A honeypot is a hidden phrase that an LLM reading the page will see but a human 
 and detect if a respondent has fallen for the honeypot phrase.
 
 Pass a `honeypot phrase` to the data quality API and Aftercare will detect if a respondent has fallen for the honeypot phrase. See the [Data Quality API](/api-reference/data-quality/evaluate) documentation for more information.
+
+## Inconsistency detection
+
+Inconsistency scores are computed by comparing a respondent's multiple responses to each other. The API response will include the inconsistency score and whether it is flagged or not. 
+
+To see specific responses that are flagged as inconsistent and the specific rationales, see the [Data Quality Console](/data-quality-console) in the platform.
+
 
 ## Tips for improving your response quality
 

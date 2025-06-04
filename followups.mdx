@@ -12,6 +12,7 @@ import {
   nonsensicalDef,
   questionContextDef,
   threadIdDef,
+  consistencyDef,
 } from "/snippets/definitions.mdx";
 
 ## Introduction
@@ -62,11 +63,13 @@ See the followup generation [API reference](/api-reference/followups/create) for
 
 ### Evaluation
 
-Aftercare will evaluate the survey, topic question, and response and provide two scores:
+Aftercare will evaluate the survey, topic question, and response and provide four scores:
 
 - `completeness`: {completenessDef}. Responses high in completeness answer the topic question well, with detail.
 - `relevance`: {relevanceDef}. Responses low in relevance are usually no-answer, troll answers, or just completely unrelated answers.
 - `nonsensical`: {nonsensicalDef}. Responses high in nonsensicality are usually garbled, incoherent, or logically inconsistent.
+- `consistency`: {consistencyDef}. Responses high in consistency are logically consistent, non-contradictory, and coherent. 
+
 These scores are used in the next section, [generation](/followups#generation)
 
 ### Generation
