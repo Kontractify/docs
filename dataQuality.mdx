@@ -36,6 +36,7 @@ Aftercare AI breaks down the quality of your responses into a few different metr
 - `Llm-generated`: how likely the response is to be AI or LLM generated.
 - `Self-duplication`: how similar a particular answer is to previous answers in the same survey response.
 - `Shared-duplication`: how similar the response is to other responses for a particular question across respondents. Duplicates can be found in the data quality console in the platform.
+<Warning>Shared duplicate scores will only be calculated if a response identifier is provided. See [Shared duplicate detection](#shared-duplicate-detection) for more information.</Warning>
 - `Keystroke-issues`: a higher score indicates suspicious non-human keystroke patterns. See [Keystroke event collection](#keystroke-event-collection) for more information.
 - `Honeypot`: a higher score indicates that the respondant has likely fallen for the honeypot phrase. See [Honeypot detection](#honeypot-detection) for more information.
 
@@ -93,6 +94,14 @@ Collect real-time keystroke events from a respondent's browser and use them to d
 From these metrics, Aftercare will compute a `keystroke-issues` score from 0-100. See these metrics in the data quality console in the platform. 
 
 To get started, see the [Events API](/integrations/events) documentation.
+
+## Shared duplicate detection
+
+Shared duplicate detection compares responses across respondents to detect copy pasted responses. Longer responses are weighted more heavily than shorter responses.
+
+Shared duplicates will only compare across responses that have a response identifier. If your respondants are anonymous, you can generate a random uuid for each response and pass it in the `responseIdentifier` field.
+
+Already generated responses and want to retroactively add response identifiers? Reach out to support@getaftercare.com and we'll be happy to help. We're adding a feature to allow you to add response identifiers to existing responses in the platform soon.
 
 ## Honeypot detection
 
