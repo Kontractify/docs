@@ -100,8 +100,9 @@ To get started, see the [Events API](/integrations/events) documentation.
 Shared duplicate detection compares responses across respondents to detect copy pasted responses. Longer responses are weighted more heavily than shorter responses.
 
 Shared duplicates will only compare across responses that have a response identifier. If your respondants are anonymous, you can generate a random uuid for each response and pass it in the `responseIdentifier` field.
+It helps to prepend `random_` to the response identifier to make it easier to identify.
 
-Already generated responses and want to retroactively add response identifiers? Reach out to support@getaftercare.com and we'll be happy to help. We're adding a feature to allow you to add response identifiers to existing responses in the platform soon.
+Already generated responses and want to retroactively add response identifiers? Reach out to support@getaftercare.com and we'll be happy to help. We're adding a feature to allow you to add response identifiers to existing responses in the platform soon. 
 
 ## Honeypot detection
 
