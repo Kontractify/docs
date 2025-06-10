@@ -1378,6 +1378,10 @@
           "isIssue": {
             "type": "boolean",
             "description": "Indicates if this issue was detected"
+          },
+          "evidence": {
+            "type": "string",
+            "description": " An optional string, evidence provides the reason for the quality issue score."
           }
         }
       },
