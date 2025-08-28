@@ -1210,6 +1210,12 @@
           },
           "guidanceBehavior": {
             "$ref": "#/components/schemas/FollowupGenerationGuidanceBehavior"
+          },
+          "minCharacterThreshold": {
+            "type": "number",
+            "description": "Minimum character threshold for all answers in a followup thread. If set, another followup question will be generated if the total character count is below this threshold, regardless of completeness score.",
+            "example": 100,
+            "minimum": 0
           }
         }
       },
